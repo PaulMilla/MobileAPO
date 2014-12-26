@@ -15,7 +15,8 @@ public class RequirementsPage extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (ApoOnline.sessionId == null) { launchLogin(); }
+//        TODO: Uncomment when done using example html
+//        if (ApoOnline.sessionId == null) { launchLogin(); }
         setContentView(R.layout.activity_requirements_page);
         TextView textView = (TextView) findViewById(R.id.requirements_text);
         textView.setText("PHPSESSID: "+ApoOnline.sessionId);
