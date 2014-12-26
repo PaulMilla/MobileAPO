@@ -32,6 +32,9 @@ public class RequirementsPage extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_login) {
             Intent myIntent = new Intent(RequirementsPage.this, LoginActivity.class);
             RequirementsPage.this.startActivity(myIntent);
             return true;
