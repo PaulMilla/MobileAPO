@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -26,6 +27,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -261,14 +263,22 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            // TODO: attempt authentication against a network service.
             try {
                 ApoOnline.login(mEmail, mPassword);
                 return true;
             } catch (IOException e) {
-                // Could not connect to APO Online
+                Log.w("LoginActivity", "COULDN'T CONNECT TO APO ONLINE!");
+                // Toast activity MUST run on UI thread
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Context context = getApplicationContext();
+                        //TODO: Move message to res/values/strings.xml
+                        CharSequence message = "Connecting to APO Online failed!";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast.makeText(context, message, duration).show();
+                    }
+                });
             } catch (IllegalArgumentException e) {
-                // Login failed
                 Log.w("LoginActivity", "LOGIN TO APO ONLINE FAILED!");
             }
 
@@ -281,9 +291,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
-                finish();
                 Intent myIntent = new Intent(LoginActivity.this, RequirementsPage.class);
                 LoginActivity.this.startActivity(myIntent);
+                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

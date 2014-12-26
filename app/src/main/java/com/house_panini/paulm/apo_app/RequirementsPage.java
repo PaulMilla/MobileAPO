@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 
 public class RequirementsPage extends ActionBarActivity {
 
@@ -36,18 +38,27 @@ public class RequirementsPage extends ActionBarActivity {
         switch (id) {
             case R.id.action_settings:
                 return true;
-            case R.id.action_login:
-                launchLogin();
+            case R.id.action_logout:
+                try {
+                    ApoOnline.logout();
+                } catch (IOException e) {
+                    // Couldn't connect to APO Online
+                } finally {
+                    launchLogin();
+                }
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean launchLogin() {
-        finish();
+    /* BUG: Logging in, pressing the "Log In" button, pressing the back
+     * button to exit the application, and opening the application again will
+     * try to load the RequirementsPage again.
+     */
+    private void launchLogin() {
         Intent myIntent = new Intent(RequirementsPage.this, LoginActivity.class);
         RequirementsPage.this.startActivity(myIntent);
-        return true;
+        finish();
     }
 }
