@@ -13,11 +13,11 @@ public class RequirementsPage extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ApoOnline.sessionId == null) { launchLogin(); }
         setContentView(R.layout.activity_requirements_page);
         TextView textView = (TextView) findViewById(R.id.requirements_text);
         textView.setText("PHPSESSID: "+ApoOnline.sessionId);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -33,16 +33,21 @@ public class RequirementsPage extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == R.id.action_login) {
-            Intent myIntent = new Intent(RequirementsPage.this, LoginActivity.class);
-            RequirementsPage.this.startActivity(myIntent);
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_login:
+                launchLogin();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean launchLogin() {
+        finish();
+        Intent myIntent = new Intent(RequirementsPage.this, LoginActivity.class);
+        RequirementsPage.this.startActivity(myIntent);
+        return true;
     }
 }
