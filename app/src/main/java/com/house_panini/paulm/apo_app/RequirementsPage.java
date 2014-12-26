@@ -1,9 +1,13 @@
 package com.house_panini.paulm.apo_app;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import java.io.IOException;
 
 
 public class RequirementsPage extends ActionBarActivity {
@@ -11,9 +15,11 @@ public class RequirementsPage extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ApoOnline.sessionId == null) { launchLogin(); }
         setContentView(R.layout.activity_requirements_page);
+        TextView textView = (TextView) findViewById(R.id.requirements_text);
+        textView.setText("PHPSESSID: "+ApoOnline.sessionId);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -29,11 +35,30 @@ public class RequirementsPage extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_logout:
+                try {
+                    ApoOnline.logout();
+                } catch (IOException e) {
+                    // Couldn't connect to APO Online
+                } finally {
+                    launchLogin();
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /* BUG: Logging in, pressing the "Log In" button, pressing the back
+     * button to exit the application, and opening the application again will
+     * try to load the RequirementsPage again.
+     */
+    private void launchLogin() {
+        Intent myIntent = new Intent(RequirementsPage.this, LoginActivity.class);
+        RequirementsPage.this.startActivity(myIntent);
+        finish();
     }
 }
