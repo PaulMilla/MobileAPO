@@ -3,11 +3,12 @@ package com.house_panini.paulm.apo_app;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import java.io.IOException;
+import java.util.HashMap;
 
 
 public class RequirementsPage extends ActionBarActivity {
@@ -15,11 +16,17 @@ public class RequirementsPage extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        TODO: Uncomment when done using example html
-//        if (ApoOnline.sessionId == null) { launchLogin(); }
         setContentView(R.layout.activity_requirements_page);
+        if (ApoOnline.sessionId == null) { launchLogin(); return;}
+
         TextView textView = (TextView) findViewById(R.id.requirements_text);
         textView.setText("PHPSESSID: "+ApoOnline.sessionId);
+
+        HashMap<String, String> requirements = ApoOnline.getRequirements();
+        for (String key : requirements.keySet()) {
+            String value = requirements.get(key);
+            Log.d("RequirementsPage", "Key: " + key + "\tValue:" + value);
+        }
     }
 
     @Override
@@ -40,23 +47,14 @@ public class RequirementsPage extends ActionBarActivity {
             case R.id.action_settings:
                 return true;
             case R.id.action_logout:
-                try {
-                    ApoOnline.logout();
-                } catch (IOException e) {
-                    // Couldn't connect to APO Online
-                } finally {
-                    launchLogin();
-                }
+                ApoOnline.logout();
+                launchLogin();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /* BUG: Logging in, pressing the "Log In" button, pressing the back
-     * button to exit the application, and opening the application again will
-     * try to load the RequirementsPage again.
-     */
     private void launchLogin() {
         Intent myIntent = new Intent(RequirementsPage.this, LoginActivity.class);
         RequirementsPage.this.startActivity(myIntent);
