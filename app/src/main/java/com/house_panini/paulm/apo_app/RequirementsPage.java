@@ -3,13 +3,11 @@ package com.house_panini.paulm.apo_app;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import java.util.HashMap;
-
+import org.json.JSONException;
 
 public class RequirementsPage extends ActionBarActivity {
 
@@ -18,14 +16,16 @@ public class RequirementsPage extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requirements_page);
         if (ApoOnline.sessionId == null) { launchLogin(); return;}
+        createUI();
+    }
 
+    private void createUI() {
         TextView textView = (TextView) findViewById(R.id.requirements_text);
-        textView.setText("PHPSESSID: "+ApoOnline.sessionId);
-
-        HashMap<String, String> requirements = ApoOnline.getRequirements();
-        for (String key : requirements.keySet()) {
-            String value = requirements.get(key);
-            Log.d("RequirementsPage", "Key: " + key + "\tValue:" + value);
+//        textView.setText("PHPSESSID: "+ApoOnline.sessionId);
+        try {
+            textView.setText("JSONObject: " + ApoOnline.getRequirements().toString(2));
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 
