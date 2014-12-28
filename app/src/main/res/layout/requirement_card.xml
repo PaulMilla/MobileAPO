@@ -1,0 +1,26 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/requirement_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="4dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/card_horizontal_margin"
+        android:paddingRight="@dimen/card_horizontal_margin"
+        android:paddingBottom="@dimen/card_vertical_margin">
+        <TextView
+            android:id="@+id/title_text"
+            android:text="template_text"
+            style="@style/Cards_TitleText"
+        />
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Requirements_ProgressBar"
+        />
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -1,24 +1,67 @@
 package com.house_panini.paulm.apo_app;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.IOException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.Iterator;
 
 public class RequirementsPage extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (ApoOnline.sessionId == null) { launchLogin(); }
         setContentView(R.layout.activity_requirements_page);
-        TextView textView = (TextView) findViewById(R.id.requirements_text);
-        textView.setText("PHPSESSID: "+ApoOnline.sessionId);
+        if (ApoOnline.sessionId == null) { launchLogin(); return;}
+        createUI();
+    }
+
+    private void createUI() {
+        JSONObject json = ApoOnline.getRequirements();
+        LinearLayout myLayout = (LinearLayout) findViewById(R.id.requirements_layout);
+
+        Iterator<String> iterator = json.keys();
+        while (iterator.hasNext()) {
+            final String nextTitle = iterator.next();
+            View card = View.inflate(getApplicationContext(), R.layout.requirement_card, null);
+
+            TextView title_text = (TextView) card.findViewById(R.id.title_text);
+            title_text.setText(nextTitle);
+
+            //BUG: Rotating device displays incorrectly displays the progress bar
+            ProgressBar progressBar = (ProgressBar) card.findViewById(R.id.progress_bar);
+            try {
+                JSONObject value = json.getJSONObject(nextTitle);
+                int max = value.getInt("max");
+                int progress = value.getInt("progress");
+                progressBar.setMax(max);
+                progressBar.setProgress(progress);
+                //TODO: Display "progress/max" as fraction or "progress of max"
+            } catch (JSONException e) {
+//                throw new RuntimeException(e);
+            }
+
+            card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO: Something when clicked
+                    String text = nextTitle+" pressed!";
+                    Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            myLayout.addView(card);
+        }
     }
 
     @Override
@@ -39,23 +82,14 @@ public class RequirementsPage extends ActionBarActivity {
             case R.id.action_settings:
                 return true;
             case R.id.action_logout:
-                try {
-                    ApoOnline.logout();
-                } catch (IOException e) {
-                    // Couldn't connect to APO Online
-                } finally {
-                    launchLogin();
-                }
+                ApoOnline.logout();
+                launchLogin();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /* BUG: Logging in, pressing the "Log In" button, pressing the back
-     * button to exit the application, and opening the application again will
-     * try to load the RequirementsPage again.
-     */
     private void launchLogin() {
         Intent myIntent = new Intent(RequirementsPage.this, LoginActivity.class);
         RequirementsPage.this.startActivity(myIntent);

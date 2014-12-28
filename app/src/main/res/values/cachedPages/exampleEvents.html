@@ -1,0 +1,594 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!--
+<link rel="icon" type="image/ico" href="images/apoicon.gif">
+<link rel="shortcut icon" href="images/apoicon.ico">
+-->
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<LINK REL="SHORTCUT ICON" HREF="images/favicon.ico">
+<title>Alpha Phi Omega - Alpha Rho Chapter</title>
+
+
+<!-- jquery -->
+<!--<script type="text/javascript" src="js/jquery.min.js"></script>-->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/jquery-ui-1.8.18.custom.blue.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.wait.js"></script>
+<script type="text/javascript" src="js/autoresize.jquery.min.js">
+	<!-- http://james.padolsey.com/javascript/jquery-plugin-autoresize/ -->
+	<!-- http://stackoverflow.com/questions/2924655/how-do-i-make-a-expanding-textbox -->
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	var ts = Math.round((new Date()).getTime() / 1000);
+
+	$("textarea[class='expand']").autoResize();
+
+	$("input:submit, .formbutton").button();
+
+	$("#login_key").toggle(function () {
+		$("#header_tabs").hide();
+		$("#header_login").show("slide", {direction: "right"}, 250);
+	},
+	function () {
+		$("#header_login").hide("slide", {direction: "right"}, 250);
+		$("#header_tabs").show("slide", {direction: "down"}, 250);
+	});
+
+	$('#tabledata tr.highlightable').hover(function() {
+		$(this).addClass("highlight");
+	}, function(){
+		$(this).removeClass("highlight");
+	});
+
+	$("#tabledata tr.highlightable:odd:not(.titlerow):not(.footerrow)").css("background-color", "#ffffff");
+
+	$("#linkbutton-profile-options").toggle(function(){
+		$("#panel-profile-options").show();
+
+		$("#link-submit-feedback").click( function() {
+			$("body").append("<div id='feedback-container' class='content-container'><div class='content-header'>APOonline v2.1 Feedback</div><div class='content-body' style='padding:20px;'><form name='feedbackForm'><input type='hidden' name='page' value='/alpharho/memberhome.php?action=vieweventcalendar'><input type='hidden' name='userid' value='19598'><input type='hidden' name='chapterid' value='84'><p>Thank you for offering feedback about APOonline! Please leave feedback on what you see or better yet, what you would like to see added!</p><div style='text-align:center;'><textarea name='feedback' rows='10' cols='60'></textarea><br><input type='submit' value='Submit Feedback'> or <a href='#cancel' class='linkbutton-cancel' id='link-feedback-cancel'>cancel</a></div></form></div></div>");
+			$("#link-feedback-cancel").click(function(){
+				$("#feedback-container").remove();
+				return false;
+			});
+			$("form[name=feedbackForm] input:submit").button();
+			$('form[name=feedbackForm]').submit(function(e){
+				$("form[name=feedbackForm] input[type=submit]").replaceWith("<span>Submitting...</span>");
+					e.preventDefault();
+					$.ajax({
+							type: 'POST',
+							cache: false,
+							url: './ajax-submit-feedback.php',
+							data: $(this).serialize(),
+							success: function(msg) {
+								if( msg == 'success' )
+								{
+									$("#feedback-container .content-body").replaceWith("<div class='success'>Thank you for your feedback!</div><div style='margin-top:50px; text-align:center;'><a href='#cancel' class='linkbutton-cancel' id='link-feedback-cancel'>close this window</a></div>");
+								}
+								else
+								{
+									$("#feedback-container .content-body").prepend("<div class='error'>An error has occured. Please e-mail tony@apoonline.org with your feedback.</div><div style='margin-top:50px; text-align:center;'><a href='#cancel' class='linkbutton-cancel' id='link-feedback-cancel'>close this window</a></div>");
+								}
+								$("#link-feedback-cancel").click(function(){
+									$("#feedback-container").remove();
+									return false;
+								});
+							}
+					});
+			});
+		});
+
+	}, function() {
+		$("#panel-profile-options").hide();
+	});
+
+	$('html').click(function() {
+		//Hide the menus if visible
+		if($("#panel-profile-options").is(":visible"))
+			$("#linkbutton-profile-options").click();
+
+		if($("#panel-select-chapter").is(":visible"))
+			$("#link-select-chapter").click();
+
+		if($("#panel-notifications").is(":visible"))
+			$("#link-notifications").click();
+
+		$(".header_menu_submenu").hide();
+
+	});
+
+	$('#panel-profile-options, #panel-select-chapter, #panel-notifications').click(function(event){
+		event.stopPropagation();
+	});
+
+
+
+	$("#link-notifications").append($("#notification-box")).toggle( function() {
+		$("#panel-notifications").show();
+
+		$.ajax({
+			url: 'ajax-get-notifications.php',
+			success: function(data) {
+				var response = JSON.parse(data);
+				var actionbox = "";
+				var actionmsg = "";
+				var hasUnread = false;
+				if( response.length == 0 )
+					$("#container-notifications").html('<div style="text-align:center; padding:20px;"><i>No recent notifications</i></div>');
+				else
+					$("#container-notifications").empty();
+				for(index in response)
+				{
+					actionbox = "";
+					actionmsg = "";
+					actionicon = "";
+					actionbox += "<div id='notification_"+response[index]['id']+"' class='notification-item";
+					if( response[index]['isUnread'] == "1" )
+					{
+						actionbox += " notification-item-unread";
+						hasUnread = true;
+					}
+					actionbox += "' href='"+response[index]['link']+"'>";
+
+
+						if( response[index]['type'] == 'photo' )
+						{
+							actionicon = "icon_picture_add.png";
+							actionmsg = response[index]['content'];
+						}
+						else if( response[index]['type'] == 'newuser' )
+						{
+							actionicon = "icon_user_add.png";
+							actionmsg = response[index]['content'];
+						}
+						else if( response[index]['type'] == 'achievement' )
+						{
+							actionicon = "icon_trophy.png";
+							actionmsg = response[index]['content'];
+						}
+						else if( response[index]['type'] == 'event' )
+						{
+							actionicon = "icon_date.png";
+							actionmsg = response[index]['content'];
+							//actionmsg = "Brother <b><a href='memberhome.php?action=profile&userid="+response[index]['userid']+"'>"+response[index]['fullname']+"</a></b> is attending <b><a href='memberhome.php?action=eventsignup&eventid="+response[index]['eventid']+"'>"+response[index]['title']+"</a></b>";
+						}
+						else if( response[index]['type'] == 'update_profile' )
+						{
+							actionicon = "icon_user.png";
+							var gender;
+							gender = 'his/her';
+							if( response[index]['gender'] == 'M' )
+								gender = 'his';
+							else if( response[index]['gender'] == 'F' )
+								gender = 'her';
+							actionmsg = "Brother <b><a href='memberhome.php?action=profile&userid="+response[index]['userid']+"'>"+response[index]['fullname']+"</a></b> just updated "+gender+" profile information and/or picture.</b>";
+						}
+						else if( response[index]['type'] == 'record' )
+						{
+							actionicon = "icon_chart_bar.png";
+							actionmsg = response[index]['content'];
+						}
+						else if( response[index]['type'] == 'invoice' )
+						{
+							actionicon = "icon_invoice.png";
+							actionmsg = response[index]['content'];
+						}
+						else
+						{
+							actionicon = "icon_information.png";
+							actionmsg = response[index]['content'];
+						}
+
+						actionbox += "<div>"+actionmsg+"</div>";
+						actionbox += "<div style='padding-top:5px; color:#AAAAAA;'><img src='images/"+actionicon+"' style='vertical-align: -3px;'> <span title='"+response[index]['dateformatted']+"'>"+response[index]['datehuman']+"</span></div>"
+					actionbox += "</div>";
+
+
+
+					$("#container-notifications").append(actionbox);
+				}
+
+				$("div.notification-item").click( function() {
+					var link_location = $(this).attr("href");
+					if( link_location && link_location != "null")
+					{
+						window.location = "http://www.apoonline.org/alpharho/" + link_location;
+					}
+				});
+
+
+				if( hasUnread )
+				{
+					$("#notification-box").removeClass("notification-unread").text("0");
+					$.ajax({
+						url: 'ajax-mark-notifications-read.php',
+						type: "GET",
+						data: "ts="+ts
+					});
+
+					$("div.notification-item-unread").hover( function() {
+						$(this).removeClass("notification-item-unread");
+					});
+				}
+			}, error: function (event, XMLHttpRequest, ajaxOptions, thrownError){
+				$("#container-notifications").html('<div class="error">Notification lookup error</div>');
+			}
+		});
+	}, function() {
+		$("#panel-notifications").hide();
+	});
+
+
+});
+
+</script>
+
+
+
+<!-- style sheet for the whole site -->
+<!-- <link href="css/global.css" rel="stylesheet" type="text/css" /> -->
+<link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+
+<script type="text/javascript" language="javascript">
+<!--
+function showdiv(divid) {
+	var div = document.getElementById(divid);
+	if (document.getElementById){ // DOM3 = IE5, NS6
+		div.style.display="block";// show/hide
+	}else{
+		if (document.layers){ // Netscape 4
+			document.layers[div].display = 'block';
+		}else{ // IE 4
+			document.all.div.display = 'block';
+		}
+	}
+}
+
+function hidediv(divid){
+	var div = document.getElementById(divid);
+	if (document.getElementById){
+		div.style.display="none";
+	}else{
+		if (document.layers){ // Netscape 4
+			document.layers[div].display = 'none';
+		}else{ // IE 4
+			document.all.div.display = 'none';
+		}
+	}
+}
+
+function checkUncheckFieldset(ctrl, fieldset){
+	if(!document.getElementById(fieldset)) return;
+	var boxes = document.getElementById(fieldset).getElementsByTagName('input');
+	for(var q = 0; q < boxes.length ; q++){
+		if(boxes[q].type == 'checkbox' && boxes[q].id != ctrl.id){
+	    boxes[q].checked = ctrl.checked;
+	  }
+	}
+}
+
+// for Facebook popups
+function popup(url, height, width) {
+	height = typeof height !== 'undefined' ? height : 400;
+	width = typeof width !== 'undefined' ? width : 580;
+	newwindow=window.open(url,'name','height='+height+',width='+width+'');
+	if (window.focus) {newwindow.focus()}
+	return false;
+}
+//-->
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<script type="text/javascript" src="js/wz_tooltip.js">
+/*
+JavaScript, DHTML Tooltips
+JavaScript Cross Browser Library.
+Developed by Walter Zorn
+http://www.walterzorn.com/tooltip/tooltip_e.htm
+*/
+</script>
+
+<div id="panel-notifications" style="display:none;">
+    <div style="border-bottom: 1px solid darkgrey;padding: 5px 10px;font-weight: bold;font-size: 0.7em;">
+        Notifications
+        <div style="float:right;"><a href="memberhome.php?action=viewnotifications" class="linkbutton-mini" style="font-size: 1em;">view all</a></div>
+    </div>
+    <div id="container-notifications">
+    </div>
+</div>
+
+<div id="topheader">
+    <div style="position:absolute; padding:10px; font-weight:bold; font-size: 0.8em;"><a href="http://www.apoonline.org/" target="_blank" style="text-decoration:none;"><img src="images/icon_apoonline.png" border="0" style="vertical-align: -3px;" /> APOonline</a></div>
+    <!--
+<div style="position:absolute; padding-top:5px; font-weight:bold; font-size: 0.8em; left:175px;"><a href="#feedback" class="linkbutton-large" style="padding: 3px 10px; color: black; text-decoration: none;" id="link-submit-feedback">Submit Feedback</a></div>
+-->
+
+    <div class="topheader-links" style="position:absolute; right:82px; text-align:center; font-size:0.8em; height:22px; padding:10px 10px 0px 10px;">
+        <a href="?action=profile">
+            Paul Milla</a>
+    </div>
+    <div id="link-notifications" class="topheader-links" style="position:absolute; right:50px; text-align:center; font-size:0.8em; height:22px; padding:8px 5px 2px 5px;">
+    </div>
+    <div style="position: absolute;right: 35px; width: 5px;text-align: center;top: 8px;">|</div>
+    <div class="topheader-links" id="linkbutton-profile-options" style="position: absolute; right: 5px;"></div>
+</div>
+
+<div id="panel-profile-options" style="display:none;">
+    <a href="?action=profile">View Profile</a>
+    <a href="?action=viewmessage">View Messages</a>
+    <a href="?action=editprofile">Edit Profile</a>
+    <a href="?action=emailnotifications">Email Settings</a>
+    <a href="#feedback" id="link-submit-feedback">Submit Feedback</a>
+    <div style="border-bottom: 1px grey solid; margin: 10px 0px;"></div>
+    <a href="?action=logout">Logout</a>
+</div>
+
+
+</div>
+<div id="header">
+
+    <div style=" color:white; font-size: 2.2em; font-family: Gautami, Verdana, Arial; font-weight: bold;">
+        <a style="padding-top:10px; float: left; text-decoration:none; color:white;" href="./">Alpha Rho Chapter</a>
+        <div style="float: right;"><img src="images/apo_logo_white.png"></div>
+    </div>
+
+</div><script>
+	$(document).ready(function() {
+
+		/*
+		$("#header_menu_item_records").mouseover(function() {
+			$(".header_menu_submenu").hide();
+			$("#header_submenu_records").show();
+		});
+		$("#header_submenu_records").mouseout(function() {
+			$(this).hide();
+		});
+
+		$("#header_menu_item_brothers").mouseover(function() {
+			$(".header_menu_submenu").hide();
+			$("#header_submenu_brothers").show();
+		});
+		$("#header_submenu_brothers").mouseout(function() {
+			$(this).hide();
+		});
+
+		$("#header_menu_item_events").mouseover(function() {
+			$(".header_menu_submenu").hide();
+			$("#header_submenu_events").show();
+		});
+		$("#header_submenu_events").mouseout(function() {
+			$(this).hide();
+		});
+
+		$("#header_menu_item_manage").mouseover(function() {
+			$(".header_menu_submenu").hide();
+			$("#header_submenu_manage").show();
+		});
+		$("#header_submenu_manage").mouseout(function() {
+			$(this).hide();
+		});
+
+		$("#header_menu_item_more").mouseover(function() {
+			$(".header_menu_submenu").hide();
+			$("#header_submenu_more").show();
+		});
+		$("#header_submenu_more").mouseout(function() {
+			$(this).hide();
+		});
+		*/
+
+$(document).ready(function () {
+
+    $('#header_menu li').hover(
+        function () {
+            //show its submenu
+            $('ul', this).stop(true).slideDown(100);
+
+        },
+        function () {
+            //hide its submenu
+            $('ul', this).stop(true).slideUp(100);
+        }
+    );
+
+});
+
+		$( "#brother-search" ).autocomplete({
+			source: "ajax-list-brothers.php",
+			minLength: 3,
+			select: function( event, ui ) {
+				$("#brother-search_hidden").val(ui.item.id);
+				$("#form-brother-search").submit();
+			},
+			focus: function( event, ui ) {
+				$( "#brother-search" ).val( ui.item.value );
+				return false;
+			}
+		})
+		.data( "autocomplete" )._renderItem = function( ul, item ) {
+			return $( "<li></li>" )
+				.data( "item.autocomplete", item )
+				.append( "<a style='height:50px; position:relative;'><div style='width:50px; height:50px; overflow:hidden; float:left; margin-right:5px;'><img src='image.php?id="+item.profileimg+"' style='width:50px;'></div><div style='margin-left: 60px; margin-top: 12px; white-space:nowrap;'>" + item.value + "</div></a>" )
+				.appendTo( ul );
+		};
+
+	});
+</script>
+<div id="subheader">
+    <ul id="header_menu"><li id="header_menu_item_home" class="header_menu_item" ><a class="header_menu_item_link" href="memberhome.php">Home</a></li><li id="header_menu_item_records" class="header_menu_item" href="memberhome.php" ><a class="header_menu_item_link" href="memberhome.php?action=profile&panel=records">Records</a><ul id="header_submenu_records" class="header_menu_submenu"><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=2">Chapter Meetings</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=3">Service Hours</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=377">Flag Events</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=380">Friendship Events</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=475">Blood Drive Hours</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=567">Leadership Event Credits</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=568">Service To Fraternity Hr.s</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=569">Service To Campus Hr.s</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=570">Service To Community Hr.s</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=571">Service To Nation Hr.s</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=722">Traditions Tests</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=723">Toast Songs</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=810">Launches</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=811">Voe Credits</a></li><li><a class="header_menu_submenu_item" href="?action=viewrecords&reqid=837">Make-up Meetings</a></li><li><a class="header_menu_submenu_item" href="?action=paydues">Pay Dues Online</a></li></ul></li><li id="header_menu_item_events" class="header_menu_item" href="memberhome.php" style="background-color: #EBEBEB;"><a class="header_menu_item_link" href="memberhome.php?action=vieweventcalendar">Events</a><ul id="header_submenu_events" class="header_menu_submenu"><li><a class="header_menu_submenu_item" href="memberhome.php?action=viewevents">View Upcoming Events</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=vieweventcalendar">View Event Calendar</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=vieweventcalendar_section">View Section 43 Calendar</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=vieweventcalendar_region">View Region VII Calendar</a></li></ul></li><li id="header_menu_item_brothers" class="header_menu_item" href="memberhome.php" ><a class="header_menu_item_link" href="memberhome.php?action=brothers">Brothers</a><ul id="header_submenu_brothers" class="header_menu_submenu"><li><a class="header_menu_submenu_item" href="memberhome.php?action=brothers">View Brothers</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=families">View Families</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=viewchapter">View All Chapters</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=topbrothers">View Top Brothers</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=topfamilies">View Top Families</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=viewchapterachievements">View Achievements</a></li><li><a class="header_menu_submenu_item" href="familytree.php" target="_blank">View Chapter  Tree</a></li></ul><li id="header_menu_item_manage" class="header_menu_item" href="memberhome.php" ><a class="header_menu_item_link" href="memberhome.php?action=managemenu">Manage</a></li><li id="header_menu_item_more" class="header_menu_item" href="memberhome.php" ><div class="header_menu_item_link">More ...</div><ul id="header_submenu_more" class="header_menu_submenu"><li><a class="header_menu_submenu_item" href="blog.php">Blog</a></li><li><a class="header_menu_submenu_item" href="photos.php">Photos</a></li><li><a class="header_menu_submenu_item" href="minutes.php">Meeting Minutes</a></li><li><a class="header_menu_submenu_item" href="memberhome.php?action=comment">Comment Form</a></li></ul></li></ul>
+    <div id="search_container">
+        <form method="get" id="form-brother-search">
+            <input type="hidden" name="action" value="profile" />
+            <input type="text" id="brother-search" name="brother-search" value="Start typing a name..." onfocus="if(this.value=='Start typing a name...')this.value='';" style="width:250px; background-image: url('images/icon_user_find.png'); background-repeat: no-repeat; background-position: 99%;" />
+            <input type="hidden" id="brother-search_hidden" name="userid">
+        </form>
+    </div>
+
+</div>
+<div id="body">
+    <script language="javascript">
+	$(document).ready(function() {
+
+		$("div[name*='toggle_controller']").toggle(
+			function () {
+				$(this).removeClass($(this).attr("myClass"));
+				$("div[class*='"+$(this).attr("myClass")+"']").hide('blind', null, 500);
+			},
+			function () {
+				$(this).addClass($(this).attr("myClass"));
+				$("div[class*='"+$(this).attr("myClass")+"']").show('blind', null, 500);
+			}
+		);
+
+		$("div[name*='toggle_chapter_controller']").toggle(
+			function () {
+				$(this).removeClass("cal_tag_controller");
+				$(this).addClass("cal_tag_1");
+				$(this).addClass("cal_switch");
+				$("div[class*='"+$(this).attr("myClass")+"']").removeClass("cal_tag_0");
+				$("div[class*='"+$(this).attr("myClass")+"']").addClass("cal_tag_1");
+			},
+			function () {
+				$(this).removeClass("cal_tag_1");
+				$(this).removeClass("cal_switch");
+				$(this).addClass("cal_hidden");
+				$(this).addClass("cal_tag_controller");
+				$("div[class*='"+$(this).attr("myClass")+"']").addClass("cal_tag_0");
+				$("div[class*='"+$(this).attr("myClass")+"']").removeClass("cal_tag_1");
+
+				$(this).removeClass("cal_tag_controller");
+				$("div[class*='"+$(this).attr("myClass")+"']").hide('blind', null, 500);
+			},
+			function () {
+				$(this).removeClass("cal_hidden");
+				$(this).addClass("cal_tag_controller");
+				$("div[class*='"+$(this).attr("myClass")+"']").show('blind', null, 500);
+			}
+		);
+
+		$("div[name*='toggle_chapter_controller']").hover(
+			function () {
+				$(this).removeClass("cal_tag_controller");
+				if($(this).hasClass("cal_hidden"))
+					$(this).addClass("cal_tag_0");
+				else
+					$(this).addClass("cal_tag_1");
+				$("div[class*='"+$(this).attr("myClass")+"']").removeClass("cal_tag_0");
+				$("div[class*='"+$(this).attr("myClass")+"']").addClass("cal_tag_1");
+			},
+			function () {
+				if($(this).hasClass("cal_switch")) return;
+				if($(this).hasClass("cal_hidden"))
+					$(this).removeClass("cal_tag_0");
+				else
+					$(this).removeClass("cal_tag_1");
+				$("div[class*='"+$(this).attr("myClass")+"']").addClass("cal_tag_0");
+				$("div[class*='"+$(this).attr("myClass")+"']").removeClass("cal_tag_1");
+				if($(this).hasClass("cal_hidden")) return;
+				$(this).addClass("cal_tag_controller");
+			}
+		);
+
+	});
+	</script>
+    <div class="content-container">
+        <div class="content-header">Event Calendar<div style="float:right;"><a href="memberhome.php?action=vieweventcalendar" onmouseover="Tip('Calendar View')" onmouseout="UnTip()" style="display:inline;"><img src="images/icon_calendar.png" /></a><a href="memberhome.php?action=viewevents" onmouseover="Tip('List View')" onmouseout="UnTip()" style="display:inline; padding-left: 5px;"><img src="images/icon_list.png" /></a></div></div>
+        <div class="content-subheadertabs">
+            <a href="memberhome.php?action=vieweventcalendar" class="content-subheader-tabs-selected" style="margin-left:10px; border-left: 1px solid #AAA;"><img src="images/icon_date.png" /> Alpha Rho's Calendar</a>
+            <a href="memberhome.php?action=vieweventcalendar_section" class=""><img src="images/icon_date.png" /> Section 43 Calendar</a>
+            <a href="memberhome.php?action=vieweventcalendar_region" class=""><img src="images/icon_date.png" /> Region VII Calendar</a>
+        </div>
+        <div class="content-body"><div style="padding:10px;"><div style="float:left; font-weight:bold; margin-left:10px;">Filter Events By: </div><div style="float:left;" class="cal_tag_1 cal_controller" myClass="cal_tag_1" name="toggle_controller">Chapter Meetings</div><div style="float:left;" class="cal_tag_2 cal_controller" myClass="cal_tag_2" name="toggle_controller">Service Projects</div><div style="float:left;" class="cal_tag_3 cal_controller" myClass="cal_tag_3" name="toggle_controller">Flag Events</div><div style="float:left;" class="cal_tag_4 cal_controller" myClass="cal_tag_4" name="toggle_controller">Friendship Events</div><div style="float:left;" class="cal_tag_5 cal_controller" myClass="cal_tag_5" name="toggle_controller">Blood Drives</div><div style="float:left;" class="cal_tag_6 cal_controller" myClass="cal_tag_6" name="toggle_controller">Leadership Events</div><div style="float:left;" class="cal_tag_7 cal_controller" myClass="cal_tag_7" name="toggle_controller">Fraternity Hours</div><div style="float:left;" class="cal_tag_8 cal_controller" myClass="cal_tag_8" name="toggle_controller">Campus Hours</div><div style="float:left;" class="cal_tag_9 cal_controller" myClass="cal_tag_9" name="toggle_controller">Community Hours</div><div style="float:left;" class="cal_tag_10 cal_controller" myClass="cal_tag_10" name="toggle_controller">Nation Hours</div><div style="float:left;" class="cal_tag_11 cal_controller" myClass="cal_tag_11" name="toggle_controller">Traditions Tests</div><div style="float:left;" class="cal_tag_12 cal_controller" myClass="cal_tag_12" name="toggle_controller">Toast Songs</div><div style="float:left;" class="cal_tag_13 cal_controller" myClass="cal_tag_13" name="toggle_controller">Launches</div><div style="float:left;" class="cal_tag_14 cal_controller" myClass="cal_tag_14" name="toggle_controller">Verification Of Enrollments</div><div style="float:left;" class="cal_tag_15 cal_controller" myClass="cal_tag_15" name="toggle_controller">Make-up Meetings</div><div style="float:left;" class="cal_tag_0 cal_controller" myClass="cal_tag_0" name="toggle_controller">Other Events</div><div style="clear:both;"></div></div><div style="clear:both;"><table class="calendar">
+            <caption class="calendar-month">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="calendar-prev"><a href="?month=11&amp;year=2014&amp;action=vieweventcalendar">&laquo;</a></span>&nbsp;December&nbsp;2014&nbsp;<span class="calendar-next"><a href="?month=1&amp;year=2015&amp;action=vieweventcalendar">&raquo;</a></span> &nbsp;&nbsp;&nbsp;&nbsp;<a href='?action=vieweventcalendar' style='font-size:10px;'>today</a></caption>
+            <tr><th abbr="Sunday">Sun</th><th abbr="Monday">Mon</th><th abbr="Tuesday">Tue</th><th abbr="Wednesday">Wed</th><th abbr="Thursday">Thu</th><th abbr="Friday">Fri</th><th abbr="Saturday">Sat</th></tr>
+            <tr class='calendar-week'><td colspan="1">&nbsp;</td><td class="calendar-day "><div class="calendar-daynumber">1</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">12:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150500">Kiosk Clean Up</a></div><div class=" cal_tag_8 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">4:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150511">Adopt-An-Acre</a></div><div class=" cal_tag_2 cal_tag_7 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">6:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=164143">Chapter Elections - Tiering</a></div><div class=" cal_tag_0 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">6:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163980">Membership/Treasury Branch Appointments</a></div><div class=" cal_tag_4 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">8:30pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163966">Speers go to Cream Whiskers to prepare for this awful week</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150205">Surewalk (Males; Pledges)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150195">Surewalk (Males; Actives)</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">2</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">5:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150522">Adopt-An-Acre</a></div><div class=" cal_tag_0 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">6:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163981">Leadership/Secretary Branch Appointments</a></div><div class=" cal_tag_4 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">7:30pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=164198">BH Takes a Study Break</a></div><div class=" cal_tag_4 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163965">Outsiders study inside</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">11:59pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150215">Surewalk (Females; Actives)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">11:59pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150225">Surewalk (Females; Pledges)</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">3</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">2:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150536">Adopt-An-Acre</a></div><div class=" cal_tag_0 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">7:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163982">Service Branch Appointments</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150235">Surewalk (Males; Actives)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150245">Surewalk (Males; Pledges)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">11:59pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150266">Surewalk (Females; Pledges)</a></div><div class=" cal_tag_8 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">11:59pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150255">Surewalk (Females; Actives)</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">4</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">8:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=160420">Swim Meet Texas Hall of Fame Swimming Invitational (Morning Shift)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">1:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150546">Adopt-An-Acre</a></div><div class=" cal_tag_9 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">3:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=148675">Food Recovery Network</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">4:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=160426">Swim Meet Texas Hall of Fame Swimming Invitational (Evening Shift)</a></div><div class=" cal_tag_4 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">5:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163983">Study Conspiracies with the Illuminati</a></div><div class=" cal_tag_2 cal_tag_9 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">6:45pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=137935">Inside Books</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150489">Surewalk (Females; Pledges)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150479">Surewalk (Females; Actives)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150469">Surewalk (Males; Pledges)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150458">Surewalk (Males; Actives)</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">5</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_8 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">8:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=160429">Swim Meet Texas Hall of Fame Swimming Invitational (Morning Shift)</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=146088">Greenhouse</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">12:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150556">Adopt-An-Acre</a></div><div class=" cal_tag_9 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">1:45pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=138015">B-I-N-G-O!!!!!!</a></div><div class=" cal_tag_8 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">2:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150568">Kiosk Clean Up</a></div><div class=" cal_tag_9 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">2:30pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=148686">Food Recovery Network</a></div><div class=" cal_tag_2 cal_tag_9 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">3:30pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163600">After Bingo Decorations</a></div><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">4:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=160432">Swim Meet Texas Hall of Fame Swimming Invitational (Evening Shift)</a></div><div class=" cal_tag_9 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">5:30pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=161511">Hospital Holiday Party</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">6</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">8:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=160436">Swim Meet Texas Hall of Fame Swimming Invitational (Morning Shift)</a></div><div class=" cal_tag_8 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">9:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150578">UT Microfarm</a></div><div class=" cal_tag_8 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">4:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=160434">Swim Meet Texas Hall of Fame Swimming Invitational (Evening Shift)</a></div><div class=" cal_tag_9 cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">10:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=145791">Austin Pets Alive Day!</a></div></div></td></tr>
+            <tr class='calendar-week'><td class="calendar-day "><div class="calendar-daynumber">7</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_2 cal_tag_8 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">9:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=150589">Concho Community Garden</a></div><div class=" cal_tag_0 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">4:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=162863">Banquet</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">8</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_0 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">3:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163828">Officer Transition/Calendar Meeting</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">9</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">10</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">11</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">12</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">13</div>
+                <div style="width:136px; overflow:hidden;"></div></td></tr>
+            <tr class='calendar-week'><td class="calendar-day "><div class="calendar-daynumber">14</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">15</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">16</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_6 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">8:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=159959">APO IMPACT Live: Youth Service Grant</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">17</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">18</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_2 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">6:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=153779">New Orleans Service Trip</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">19</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">20</div>
+                <div style="width:136px; overflow:hidden;"></div></td></tr>
+            <tr class='calendar-week'><td class="calendar-day "><div class="calendar-daynumber">21</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_6 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">2:00pm</span> <a href="memberhome.php?action=eventsignup&amp;eventid=163735">APO LEADS: LAUNCH</a></div></div></td><td class="calendar-day "><div class="calendar-daynumber">22</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">23</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">24</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">25</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day calendar-today"><div class="calendar-daynumber">26</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">27</div>
+                <div style="width:136px; overflow:hidden;"><div class=" cal_tag_4 cal_tag_2 cal_tag_6 cal_event_box"><span style="font-family:'Times New Roman', Times, serif;">7:00am</span> <a href="memberhome.php?action=eventsignup&amp;eventid=141748">National Convention 2014</a></div></div></td></tr>
+            <tr class='calendar-week'><td class="calendar-day "><div class="calendar-daynumber">28</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">29</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">30</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td class="calendar-day "><div class="calendar-daynumber">31</div>
+                <div style="width:136px; overflow:hidden;"></div></td><td colspan="3">&nbsp;</td></tr>
+        </table>
+        </div><div style="padding:3px; font-size:10px; text-align:right;">All dates and times are in the Chapter's local timezone: America/Chicago</div></div></div>	<script type="text/javascript">
+	$(document).ready(function() {
+
+	$("#pagecontent").css("padding","0");
+	$("#pagecontent").css("width","700px");
+	if(typeof $.fn.fancybox == 'function') {
+	$("a.fancybox").fancybox({
+		'overlayOpacity'	:	0.8,
+		'titleShow'				: false,
+		'height'					:	350,
+		'width'						:	500,
+		'scrolling'				: 'no',
+		'type' : 'iframe'
+	});
+	}
+
+	});
+	</script>
+</div>
+
+<!--
+<div style="text-align:center; font-size:10px; padding:2px; color:#7F7F7F;"><b>Current Term:</b> June 1, 2014 to December 31, 2014</div>
+-->
+
+<div id="notification-box" class="notification-box">0</div></body>
+</html>
