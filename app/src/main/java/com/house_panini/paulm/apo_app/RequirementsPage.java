@@ -1,13 +1,20 @@
 package com.house_panini.paulm.apo_app;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Iterator;
 
 public class RequirementsPage extends ActionBarActivity {
 
@@ -20,12 +27,40 @@ public class RequirementsPage extends ActionBarActivity {
     }
 
     private void createUI() {
-        TextView textView = (TextView) findViewById(R.id.requirements_text);
-//        textView.setText("PHPSESSID: "+ApoOnline.sessionId);
-        try {
-            textView.setText("JSONObject: " + ApoOnline.getRequirements().toString(2));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        JSONObject json = ApoOnline.getRequirements();
+        LinearLayout myLayout = (LinearLayout) findViewById(R.id.requirements_layout);
+
+        Iterator<String> iterator = json.keys();
+        while (iterator.hasNext()) {
+            final String nextTitle = iterator.next();
+            View card = View.inflate(getApplicationContext(), R.layout.requirement_card, null);
+
+            TextView title_text = (TextView) card.findViewById(R.id.title_text);
+            title_text.setText(nextTitle);
+
+            //BUG: Rotating device displays incorrectly displays the progress bar
+            ProgressBar progressBar = (ProgressBar) card.findViewById(R.id.progress_bar);
+            try {
+                JSONObject value = json.getJSONObject(nextTitle);
+                int max = value.getInt("max");
+                int progress = value.getInt("progress");
+                progressBar.setMax(max);
+                progressBar.setProgress(progress);
+                //TODO: Display "progress/max" as fraction or "progress of max"
+            } catch (JSONException e) {
+//                throw new RuntimeException(e);
+            }
+
+            card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO: Something when clicked
+                    String text = nextTitle+" pressed!";
+                    Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            myLayout.addView(card);
         }
     }
 

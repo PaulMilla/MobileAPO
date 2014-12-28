@@ -23,6 +23,20 @@ public class ApoOnline {
     static String sessionId;
     static JSONObject requirements;
 
+    /**
+     * The way APO Online is implemented there is no "login page". Instead the
+     * server will throw out a login page to any url if it determines the
+     * PHPSESSID cookie is either outdated or unauthorized.
+     *
+     * Due to this it might be worth looking into merging login() and getPage()
+     *
+     * @param email                         Clear text email address
+     * @param pass                          Clear text password
+     * @return                              Returns org.jsou.nodes.Document,
+     *                                      jsoup's representation of a web page
+     * @throws IllegalArgumentException     thrown to signal caller of an invalid login.
+     * @throws IOException                  thrown when connection to apoonline.org can't be established
+     */
     public static Document login (String email, String pass) throws IllegalArgumentException, IOException {
         Log.v("APO.login", "Attempting to connect to " + HOME_PAGE);
         Connection.Response res = Jsoup.connect(HOME_PAGE)
@@ -47,11 +61,33 @@ public class ApoOnline {
         return doc;
     }
 
+    /**
+     * Checks the document for the "Log In" prompt.
+     *
+     * We don't want to check for the "password incorrect" prompt because
+     * an expired cookie will also bring up the same prompt.
+     * @param doc       The jsoup document to be checked
+     * @return          False if we've been logged out, true otherwise
+     */
     protected static boolean validateDoc (Document doc) {
         Elements elements = doc.getElementsByClass("content-header");
         return !elements.html().contains("Log In");
     }
 
+    /**
+     * Uses Jsoup to parse through the provided document for requirements and
+     * hyperlinks for options. Results are then stored as a JSONObject into
+     * the class static variable requirements. Due to the fragile nature of
+     * this, this function is instead protected. Other classes instead
+     * must call getRequirements().
+     *
+     * Note: While we could essentially hard code the url for requirements,
+     * the login procedure already returns the requirements page. As such,
+     * it is more efficient to pass it here than it is to make another
+     * connection to apoonline.org
+     *
+     * @param doc   The jsoup document to be parsed
+     */
     protected static void parseRequirements (Document doc) {
         requirements = new JSONObject();
         Element reqs = doc.select("div.content-body").first();
@@ -59,8 +95,7 @@ public class ApoOnline {
         while (iterator.hasNext()) {
             //Header
             Element header = iterator.next();
-            //update link same as View Detailed Records!
-            //Element header_update = header.children().first();
+            //Update link is the same as View Detailed Records!
 
             //Progress
             Element progressBarContainer = iterator.next().select("div > div").first();
@@ -73,7 +108,9 @@ public class ApoOnline {
             try {
                 JSONObject block = new JSONObject();
                 block.put("percent", progressBar.attr("init-value"));
-                block.put("fraction", span.text().replace(" of ","/"));
+                String[] fraction = span.text().split(" of ");
+                block.put("progress", fraction[0]);
+                block.put("max", fraction[1]);
                 JSONObject options = new JSONObject();
                 for (Element button : infoBarButtons) {
                     options.put(button.text(), button.attr("href"));
@@ -86,6 +123,10 @@ public class ApoOnline {
         }
     }
 
+    /**
+     * Getter method for the cached requirements json
+     * @return  JSONObject representation of the previous pareRequirements()
+     */
     public static JSONObject getRequirements() {
         return requirements;
     }
