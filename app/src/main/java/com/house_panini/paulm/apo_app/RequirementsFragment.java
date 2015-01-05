@@ -1,6 +1,7 @@
 package com.house_panini.paulm.apo_app;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +56,18 @@ public class RequirementsFragment extends Fragment {
                     //TODO: Something when clicked
                     String text = nextTitle+" pressed!";
                     Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+
+                    // Create new fragment and transition
+                    Fragment newFragment = new RelatedEventsFragment();
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                    // Replace whatever is in the fragment_container view with this fragment
+                    transaction.replace(R.id.container, newFragment);
+                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    transaction.addToBackStack(null);
+
+                    // Commit the transaction
+                    transaction.commit();
                 }
             });
 

@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements RelatedEventsFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,13 +19,11 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
 
-        /* This is now being done automatically by defining the fragment tag under
-         *  activity_main.xml */
-//        if (savedInstanceState == null) {
-//            getFragmentManager().beginTransaction()
-//                    .add(R.id.container, new RequirementsFragment())
-//                    .commit();
-//        }
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new RequirementsFragment())
+                    .commit();
+        }
     }
 
 
@@ -60,4 +59,9 @@ public class MainActivity extends ActionBarActivity {
         finish();
     }
 
+    @Override
+    public void onFragmentInteraction(String id) {
+        String text = id+" pressed!";
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
 }
