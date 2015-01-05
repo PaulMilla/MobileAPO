@@ -1,5 +1,6 @@
 package com.house_panini.paulm.apo_app;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
-public class RequirementsFragment extends android.support.v4.app.Fragment {
+public class RequirementsFragment extends Fragment {
 
     public RequirementsFragment() {
     }
