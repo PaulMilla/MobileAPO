@@ -126,9 +126,10 @@ public class ApoOnline {
     /**
      * Getter method for the cached requirements json
      * @return  JSONObject representation of the previous pareRequirements()
+     *          or null if it hasn't been filled yet
      */
     public static JSONObject getRequirements() {
-        return requirements;
+        return requirements != null ? requirements : new JSONObject();
     }
 
     public static void logout() {
