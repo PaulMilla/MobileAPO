@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".RequirementsPage">
     <item
+        android:id="@+id/action_main"
+        android:orderInCategory="98"
+        android:title="Test Main"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/action_logout"
         android:orderInCategory="99"
         android:title="@string/action_logout"

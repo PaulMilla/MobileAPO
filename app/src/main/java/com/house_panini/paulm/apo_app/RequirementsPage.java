@@ -79,6 +79,8 @@ public class RequirementsPage extends ActionBarActivity {
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.action_main:
+                launchMain();
             case R.id.action_settings:
                 return true;
             case R.id.action_logout:
@@ -88,6 +90,12 @@ public class RequirementsPage extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchMain() {
+        Intent myIntent = new Intent(RequirementsPage.this, MainActivity.class);
+        RequirementsPage.this.startActivity(myIntent);
+        finish();
     }
 
     private void launchLogin() {
