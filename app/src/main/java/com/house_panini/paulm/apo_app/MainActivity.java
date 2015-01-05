@@ -18,11 +18,13 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
 
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new RequirementsFragment())
-                    .commit();
-        }
+        /* This is now being done automatically by defining the fragment tag under
+         *  activity_main.xml */
+//        if (savedInstanceState == null) {
+//            getFragmentManager().beginTransaction()
+//                    .add(R.id.container, new RequirementsFragment())
+//                    .commit();
+//        }
     }
 
 

@@ -25,8 +25,8 @@ public class RequirementsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_requirements, container, false);
 
-        JSONObject json = ApoOnline.getRequirements();
         LinearLayout myLayout = (LinearLayout) rootView.findViewById(R.id.requirements_layout);
+        JSONObject json = ApoOnline.getRequirements();
 
         Iterator<String> iterator = json.keys();
         while (iterator.hasNext()) {
