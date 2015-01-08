@@ -48,8 +48,9 @@ public class RequirementsFragment extends Fragment {
             title_text.setText(nextTitle);
 
             //BUG: Rotating device displays incorrectly displays the progress bar
-            ProgressBar progressBar = (ProgressBar) card.findViewById(R.id.progress_bar);
             try {
+                // Set the Progress Bar
+                ProgressBar progressBar = (ProgressBar) card.findViewById(R.id.progress_bar);
                 JSONObject value = json.getJSONObject(nextTitle);
                 int max = value.getInt("max");
                 int progress = value.getInt("progress");
@@ -57,12 +58,13 @@ public class RequirementsFragment extends Fragment {
                 progressBar.setProgress(progress);
                 //TODO: Display "progress/max" as fraction or "progress of max"
 
+                // Set the Options
                 final JSONObject options = value.getJSONObject("options");
                 card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Get the link for Related Events
                         try {
+                            // Get the link for Related Events
                             String href = options.getString(ApoOnline.OPTION_EVENTS);
 
                             // Create new fragment and transition
@@ -77,7 +79,8 @@ public class RequirementsFragment extends Fragment {
                             // Commit the transaction
                             transaction.commit();
                         } catch (JSONException e) {
-                            Log.w("onClick", "json.options has no '"+ApoOnline.OPTION_EVENTS+"' key");
+                            // Ex: "Dues Progress" doesn't have any options
+                            Log.w("onClick", nextTitle+"has no '"+ApoOnline.OPTION_EVENTS+"' option");
                             Log.w("onClick", options.toString());
                         }
                     }
