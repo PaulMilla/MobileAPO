@@ -19,6 +19,9 @@ public class ApoOnline {
     private static final String APO_ROOT = "http://apoonline.org/alpharho/";
     private static final String HOME_PAGE = APO_ROOT+"memberhome.php";
     private static final String LOGOUT_PAGE = APO_ROOT+"memberhome.php?action=logout";
+    public static final String OPTION_RECORDS = "View Detailed Records";
+    public static final String OPTION_STANDINGS = "View Current Standings";
+    public static final String OPTION_EVENTS = "View Related Events";
 
     static String sessionId;
     static JSONObject requirements;
@@ -113,7 +116,7 @@ public class ApoOnline {
                 block.put("max", fraction[1]);
                 JSONObject options = new JSONObject();
                 for (Element button : infoBarButtons) {
-                    options.put(button.text(), button.attr("href"));
+                    options.put(button.text(), APO_ROOT+button.attr("href"));
                 }
                 block.put("options", options);
                 requirements.put(header.ownText(), block);

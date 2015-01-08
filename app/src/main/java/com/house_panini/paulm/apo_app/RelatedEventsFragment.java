@@ -3,6 +3,7 @@ package com.house_panini.paulm.apo_app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -18,23 +19,25 @@ import com.house_panini.paulm.apo_app.dummy.DummyContent;
  */
 public class RelatedEventsFragment extends ListFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_URL = "url";
+    private static final String ARG_TITLE = "title";
+    private String url;
+    private String title;
 
     private OnFragmentInteractionListener mListener;
 
-    // TODO: Rename and change types of parameters
-    public static RelatedEventsFragment newInstance(String param1, String param2) {
+    /**
+     * Apparently using factory methods is the Google way of constructing a
+     * new Fragment rather than just have a constructor with parameters.
+     * @param title The title/heading of the requirement
+     * @param href  The http link for the related events page
+     * @return      A new class with an attached bundle based off given parameters
+     */
+    public static RelatedEventsFragment newInstance(String title, String href) {
         RelatedEventsFragment fragment = new RelatedEventsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_URL, href);
+        args.putString(ARG_TITLE, title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,8 +53,10 @@ public class RelatedEventsFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            url = getArguments().getString(ARG_URL);
+            title = getArguments().getString(ARG_TITLE);
+            Log.i("title", title);
+            Log.i("url", url);
         }
 
         // TODO: Change Adapter to display your content
