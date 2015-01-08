@@ -1,8 +1,10 @@
 package com.house_panini.paulm.apo_app;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +19,15 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 public class RequirementsFragment extends Fragment {
+    private FragmentActivity myContext;
 
     public RequirementsFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        myContext = (FragmentActivity) activity;
+        super.onAttach(activity);
     }
 
     @Override
@@ -59,7 +68,7 @@ public class RequirementsFragment extends Fragment {
 
                     // Create new fragment and transition
                     Fragment newFragment = new RelatedEventsFragment();
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    FragmentTransaction transaction = myContext.getSupportFragmentManager().beginTransaction();
 
                     // Replace whatever is in the fragment_container view with this fragment
                     transaction.replace(R.id.container, newFragment);

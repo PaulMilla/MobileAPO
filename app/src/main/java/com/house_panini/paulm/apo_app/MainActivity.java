@@ -20,7 +20,7 @@ public class MainActivity extends ActionBarActivity implements RelatedEventsFrag
         }
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new RequirementsFragment())
                     .commit();
         }

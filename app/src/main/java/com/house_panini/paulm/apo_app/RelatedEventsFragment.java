@@ -1,8 +1,8 @@
 package com.house_panini.paulm.apo_app;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -43,8 +43,7 @@ public class RelatedEventsFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public RelatedEventsFragment() {
-    }
+    public RelatedEventsFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
