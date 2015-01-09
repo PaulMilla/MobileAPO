@@ -60,8 +60,8 @@ public class MainActivity extends ActionBarActivity implements RelatedEventsFrag
     }
 
     @Override
-    public void onFragmentInteraction(String id) {
-        String text = id+" pressed!";
+    public void onFragmentInteraction(RelatedEventsFragment.Event event) {
+        String text = event.displayName+" pressed!";
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
 }

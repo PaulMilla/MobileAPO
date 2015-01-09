@@ -3,8 +3,6 @@ package com.house_panini.paulm.apo_app;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.house_panini.paulm.apo_app.dummy.DummyContent;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -32,7 +30,7 @@ public class ApoOnline {
 
     static String sessionId;
     static JSONObject requirements;
-    static Map<String, List<DummyContent.DummyItem>> relatedEvents = new HashMap<>();
+    static Map<String, List<RelatedEventsFragment.Event>> relatedEvents = new HashMap<>();
 
     /**
      * The way APO Online is implemented there is no "login page". Instead the
@@ -149,18 +147,18 @@ public class ApoOnline {
      * @param url   URL to the page containing the related events
      */
     public static void parseRelated(String title, String url) {
-        List<DummyContent.DummyItem> list = new LinkedList<>();
-        list.add(new DummyContent.DummyItem("id1", "Content1"));
-        list.add(new DummyContent.DummyItem("id2", "Content2"));
-        list.add(new DummyContent.DummyItem("id3", "Content3"));
-        list.add(new DummyContent.DummyItem("id4", "Content4"));
-        list.add(new DummyContent.DummyItem("id5", "Content5"));
+        List<RelatedEventsFragment.Event> list = new LinkedList<>();
+        list.add(new RelatedEventsFragment.Event("displayName1", url));
+        list.add(new RelatedEventsFragment.Event("displayName2", "url2"));
+        list.add(new RelatedEventsFragment.Event("displayName3", "url3"));
+        list.add(new RelatedEventsFragment.Event("displayName4", "url4"));
+        list.add(new RelatedEventsFragment.Event("displayName5", "url5"));
         relatedEvents.put(title, list);
     }
 
-    public static List<DummyContent.DummyItem> getRelated(String title) {
-        return !relatedEvents.get(title).isEmpty() ?
-                relatedEvents.get(title) : new LinkedList<DummyContent.DummyItem>();
+    public static List<RelatedEventsFragment.Event> getRelated(String title) {
+        return relatedEvents.containsKey(title) ?
+                relatedEvents.get(title) : new LinkedList<RelatedEventsFragment.Event>();
     }
 
     public static void logout() {

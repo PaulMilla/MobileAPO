@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.house_panini.paulm.apo_app.dummy.DummyContent;
-
 import java.util.List;
 
 /**
@@ -88,7 +86,7 @@ public class RelatedEventsFragment extends ListFragment {
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            mListener.onFragmentInteraction(ApoOnline.getRelated(title).get(position));
         }
     }
 
@@ -104,7 +102,7 @@ public class RelatedEventsFragment extends ListFragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        public void onFragmentInteraction(Event event);
     }
 
 
@@ -126,9 +124,24 @@ public class RelatedEventsFragment extends ListFragment {
         @Override
         protected void onPostExecute(final Boolean success) {
             // TODO: Change Adapter to display your content
-            List<DummyContent.DummyItem> relatedEvents = ApoOnline.getRelated(title);
-            setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
+            List<Event> relatedEvents = ApoOnline.getRelated(title);
+            setListAdapter(new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_list_item_1, android.R.id.text1, relatedEvents));
+        }
+    }
+
+    public static class Event {
+        public String displayName;
+        public String href;
+
+        public Event (String _displayName, String _href) {
+            displayName = _displayName;
+            href = _href;
+        }
+
+        @Override
+        public String toString() {
+            return displayName;
         }
     }
 }
