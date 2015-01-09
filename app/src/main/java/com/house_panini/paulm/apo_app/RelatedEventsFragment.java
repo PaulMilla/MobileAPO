@@ -1,14 +1,16 @@
 package com.house_panini.paulm.apo_app;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.house_panini.paulm.apo_app.dummy.DummyContent;
+
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -55,13 +57,9 @@ public class RelatedEventsFragment extends ListFragment {
         if (getArguments() != null) {
             url = getArguments().getString(ARG_URL);
             title = getArguments().getString(ARG_TITLE);
-            Log.i("title", title);
-            Log.i("url", url);
         }
 
-        // TODO: Change Adapter to display your content
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
+        new UserRelatedEventsTask(title, url).execute((Void) null);
     }
 
 
@@ -109,4 +107,28 @@ public class RelatedEventsFragment extends ListFragment {
         public void onFragmentInteraction(String id);
     }
 
+
+    class UserRelatedEventsTask extends AsyncTask<Void, Void, Boolean> {
+        String url;
+        String title;
+
+        UserRelatedEventsTask(String _title, String _url) {
+            url = _url;
+            title = _title;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            ApoOnline.parseRelated(title, url);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            // TODO: Change Adapter to display your content
+            List<DummyContent.DummyItem> relatedEvents = ApoOnline.getRelated(title);
+            setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
+                    android.R.layout.simple_list_item_1, android.R.id.text1, relatedEvents));
+        }
+    }
 }

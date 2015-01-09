@@ -3,6 +3,8 @@ package com.house_panini.paulm.apo_app;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.house_panini.paulm.apo_app.dummy.DummyContent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -12,19 +14,25 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ApoOnline {
     //TODO: Update these via values/strings.xml
     private static final String APO_ROOT = "http://apoonline.org/alpharho/";
     private static final String HOME_PAGE = APO_ROOT+"memberhome.php";
     private static final String LOGOUT_PAGE = APO_ROOT+"memberhome.php?action=logout";
+
     public static final String OPTION_RECORDS = "View Detailed Records";
     public static final String OPTION_STANDINGS = "View Current Standings";
     public static final String OPTION_EVENTS = "View Related Events";
 
     static String sessionId;
     static JSONObject requirements;
+    static Map<String, List<DummyContent.DummyItem>> relatedEvents = new HashMap<>();
 
     /**
      * The way APO Online is implemented there is no "login page". Instead the
@@ -135,6 +143,26 @@ public class ApoOnline {
         return requirements != null ? requirements : new JSONObject();
     }
 
+    /**
+     * Public method in order to update the relatedEvents
+     * @param title Requirements title the related events will be stored under
+     * @param url   URL to the page containing the related events
+     */
+    public static void parseRelated(String title, String url) {
+        List<DummyContent.DummyItem> list = new LinkedList<>();
+        list.add(new DummyContent.DummyItem("id1", "Content1"));
+        list.add(new DummyContent.DummyItem("id2", "Content2"));
+        list.add(new DummyContent.DummyItem("id3", "Content3"));
+        list.add(new DummyContent.DummyItem("id4", "Content4"));
+        list.add(new DummyContent.DummyItem("id5", "Content5"));
+        relatedEvents.put(title, list);
+    }
+
+    public static List<DummyContent.DummyItem> getRelated(String title) {
+        return !relatedEvents.get(title).isEmpty() ?
+                relatedEvents.get(title) : new LinkedList<DummyContent.DummyItem>();
+    }
+
     public static void logout() {
         Log.d("APO.logout", "Using PHPSESSID: " + sessionId);
         new UserLogoutTask().execute((Void) null);
@@ -147,7 +175,7 @@ public class ApoOnline {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Jsoup.connect(LOGOUT_PAGE).cookie("PHPSESSID", sessionId).get();
+                ApoOnline.getPage(LOGOUT_PAGE);
             } catch (IOException e) {
                 // Connection to APO Online failed, but we don't really care
             } finally {

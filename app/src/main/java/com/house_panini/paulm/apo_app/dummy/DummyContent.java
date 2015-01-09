@@ -28,6 +28,7 @@ public class DummyContent {
         addItem(new DummyItem("1", "Item 1"));
         addItem(new DummyItem("2", "Item 2"));
         addItem(new DummyItem("3", "Item 3"));
+        addItem(new DummyItem("My ID", "Related Event 1"));
     }
 
     private static void addItem(DummyItem item) {
