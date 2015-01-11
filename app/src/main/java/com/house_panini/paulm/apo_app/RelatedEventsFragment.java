@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -133,11 +134,13 @@ public class RelatedEventsFragment extends ListFragment {
     public static class Event {
         public String displayName;
         public String href;
+        public String weekday;
+        public String month;
+        public String date;
+        public String attending;
+        public LinkedList<String> tags = new LinkedList<>();
 
-        public Event (String _displayName, String _href) {
-            displayName = _displayName;
-            href = _href;
-        }
+        public Event () {}
 
         @Override
         public String toString() {

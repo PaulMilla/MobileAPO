@@ -148,11 +148,43 @@ public class ApoOnline {
      */
     public static void parseRelated(String title, String url) {
         List<RelatedEventsFragment.Event> list = new LinkedList<>();
-        list.add(new RelatedEventsFragment.Event("displayName1", url));
-        list.add(new RelatedEventsFragment.Event("displayName2", "url2"));
-        list.add(new RelatedEventsFragment.Event("displayName3", "url3"));
-        list.add(new RelatedEventsFragment.Event("displayName4", "url4"));
-        list.add(new RelatedEventsFragment.Event("displayName5", "url5"));
+
+        Document doc;
+        try {
+            doc = getPage(url);
+        } catch (IOException e) {
+            Log.e("ParsingRelated", e.toString());
+            return;
+        }
+
+        Element contentBody = doc.select("div.content-body").first();
+
+        for (Element child : contentBody.children()) {
+            RelatedEventsFragment.Event event = new RelatedEventsFragment.Event();
+
+            //BUG: App crashes when there are no related events. Possible reason is
+            //because these selectors don't find anything
+            event.weekday = child.select("div.calendar-imagebox-weekday").text();
+            event.month = child.select("div.calendar-imagebox-month").text();
+            event.date = child.select("div.calendar-imagebox-date").text();
+
+            Element event_title = child.select("div.calendar-title").first();
+            Iterator<Element> data = event_title.children().iterator();
+
+            Element link = data.next();
+            event.displayName = link.text();
+            event.href = HOME_PAGE+link.attr("href");
+
+            event.attending = data.next().ownText();
+
+            Element tags = data.next();
+            for (Element tag : tags.children()) {
+                event.tags.add(tag.text());
+            }
+
+            list.add(event);
+        }
+
         relatedEvents.put(title, list);
     }
 
