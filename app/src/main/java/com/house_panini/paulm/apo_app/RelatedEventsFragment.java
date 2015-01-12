@@ -86,7 +86,7 @@ public class RelatedEventsFragment extends ListFragment {
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(ApoOnline.getRelated(title).get(position));
+            mListener.onFragmentInteraction(ApoOnline.getRelated(title, url).get(position));
         }
     }
 
@@ -108,6 +108,7 @@ public class RelatedEventsFragment extends ListFragment {
     class UserRelatedEventsTask extends AsyncTask<Void, Void, Void> {
         String url;
         String title;
+        List<Event> relatedEvents;
 
         UserRelatedEventsTask(String _title, String _url) {
             url = _url;
@@ -116,14 +117,12 @@ public class RelatedEventsFragment extends ListFragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            ApoOnline.parseRelated(title, url);
+            relatedEvents = ApoOnline.getRelated(title, url);
             return null;
         }
 
         @Override
         protected void onPostExecute(final Void success) {
-            List<Event> relatedEvents = ApoOnline.getRelated(title);
-
             // Always check isAdded() before calling getActivity(), setListAdapter(),
             // or setEmptyText() or risk having a NullPointerException if a user presses
             // the back button before the fragment finished loading.

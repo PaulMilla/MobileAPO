@@ -142,26 +142,27 @@ public class ApoOnline {
     }
 
     /**
-     * Public method in order to update the relatedEvents
+     * Uses Jsoup to parse through the provided document for related events.
+     * Results are then cached into relatedEvents for future use.
      * @param title Requirements title the related events will be stored under
      * @param url   URL to the page containing the related events
+     * @return      The newly created list containing all related events
      */
-    public static void parseRelated(String title, String url) {
+    protected static List<RelatedEventsFragment.Event> parseRelated(String title, String url) {
+        List<RelatedEventsFragment.Event> list = new LinkedList<>();
         Document doc;
         try {
             doc = getPage(url);
         } catch (IOException e) {
             Log.e("parseRelated", "Couldn't connect to APO Online!");
-            return;
+            return list;
         }
-
-        List<RelatedEventsFragment.Event> list = new LinkedList<>();
 
         Element contentBody = doc.select("div.content-body").first();
 
         if(contentBody.children().size() == 1) {
             Log.d("parseRelated", contentBody.text());
-            return;
+            return list;
         }
 
         for (Element child : contentBody.children()) {
@@ -170,7 +171,7 @@ public class ApoOnline {
             try {
                 data = event_title.children().iterator();
             } catch (NullPointerException e) {
-                return;
+                return list;
             }
 
             RelatedEventsFragment.Event event = new RelatedEventsFragment.Event();
@@ -194,11 +195,29 @@ public class ApoOnline {
         }
 
         relatedEvents.put(title, list);
+        return list;
     }
 
-    public static List<RelatedEventsFragment.Event> getRelated(String title) {
-        return relatedEvents.containsKey(title) ?
-                relatedEvents.get(title) : new LinkedList<RelatedEventsFragment.Event>();
+    public static List<RelatedEventsFragment.Event> getRelated(String title, String url) {
+        return getRelated(title, url, false);
+    }
+
+    /**
+     * Public method to grab a list of related events. If there is no cached copy, if the cached
+     * copy shows an empty list, or if the parameter forced is true then we return the output of
+     * parseRelated(). Vice-versa, if we do have a non-empty cached copy and forced is false, we
+     * return the cached copy instead of attempting to make another connection to apoonline.org.
+     * @param title     Requirements title the related events will be stored under
+     * @param url       URL to the page containing the related events
+     * @param forced    Weather we want to force a connection to apoonline and refresh our cache
+     * @return          A list of related events, parsed from the url string provided
+     */
+    public static List<RelatedEventsFragment.Event> getRelated(String title, String url, boolean forced) {
+        if (!forced && relatedEvents.containsKey(title) && !relatedEvents.get(title).isEmpty()) {
+            return relatedEvents.get(title);
+        } else {
+            return parseRelated(title, url);
+        }
     }
 
     public static void logout() {
