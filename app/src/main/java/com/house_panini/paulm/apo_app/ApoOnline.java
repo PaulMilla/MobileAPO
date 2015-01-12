@@ -147,29 +147,33 @@ public class ApoOnline {
      * @param url   URL to the page containing the related events
      */
     public static void parseRelated(String title, String url) {
-        List<RelatedEventsFragment.Event> list = new LinkedList<>();
-
         Document doc;
         try {
             doc = getPage(url);
         } catch (IOException e) {
-            Log.e("ParsingRelated", e.toString());
+            Log.e("parseRelated", "Couldn't connect to APO Online!");
             return;
         }
 
+        List<RelatedEventsFragment.Event> list = new LinkedList<>();
+
         Element contentBody = doc.select("div.content-body").first();
 
+        if(contentBody.children().size() == 1) {
+            Log.d("parseRelated", contentBody.text());
+            return;
+        }
+
         for (Element child : contentBody.children()) {
-            RelatedEventsFragment.Event event = new RelatedEventsFragment.Event();
-
-            //BUG: App crashes when there are no related events. Possible reason is
-            //because these selectors don't find anything
-            event.weekday = child.select("div.calendar-imagebox-weekday").text();
-            event.month = child.select("div.calendar-imagebox-month").text();
-            event.date = child.select("div.calendar-imagebox-date").text();
-
             Element event_title = child.select("div.calendar-title").first();
-            Iterator<Element> data = event_title.children().iterator();
+            Iterator<Element> data;
+            try {
+                data = event_title.children().iterator();
+            } catch (NullPointerException e) {
+                return;
+            }
+
+            RelatedEventsFragment.Event event = new RelatedEventsFragment.Event();
 
             Element link = data.next();
             event.displayName = link.text();
@@ -181,6 +185,10 @@ public class ApoOnline {
             for (Element tag : tags.children()) {
                 event.tags.add(tag.text());
             }
+
+            event.weekday = child.select("div.calendar-imagebox-weekday").text();
+            event.month = child.select("div.calendar-imagebox-month").text();
+            event.date = child.select("div.calendar-imagebox-date").text();
 
             list.add(event);
         }
@@ -206,7 +214,7 @@ public class ApoOnline {
         protected Void doInBackground(Void... params) {
             try {
                 ApoOnline.getPage(LOGOUT_PAGE);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Connection to APO Online failed, but we don't really care
             } finally {
                 sessionId = null;

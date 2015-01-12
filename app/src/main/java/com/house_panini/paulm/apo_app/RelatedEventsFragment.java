@@ -56,9 +56,8 @@ public class RelatedEventsFragment extends ListFragment {
         if (getArguments() != null) {
             url = getArguments().getString(ARG_URL);
             title = getArguments().getString(ARG_TITLE);
+            new UserRelatedEventsTask(title, url).execute((Void) null);
         }
-
-        new UserRelatedEventsTask(title, url).execute((Void) null);
     }
 
 
@@ -102,12 +101,11 @@ public class RelatedEventsFragment extends ListFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Event event);
     }
 
 
-    class UserRelatedEventsTask extends AsyncTask<Void, Void, Boolean> {
+    class UserRelatedEventsTask extends AsyncTask<Void, Void, Void> {
         String url;
         String title;
 
@@ -117,17 +115,26 @@ public class RelatedEventsFragment extends ListFragment {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             ApoOnline.parseRelated(title, url);
-            return true;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
-            // TODO: Change Adapter to display your content
+        protected void onPostExecute(final Void success) {
             List<Event> relatedEvents = ApoOnline.getRelated(title);
-            setListAdapter(new ArrayAdapter<>(getActivity(),
-                    android.R.layout.simple_list_item_1, android.R.id.text1, relatedEvents));
+
+            // Always check isAdded() before calling getActivity(), setListAdapter(),
+            // or setEmptyText() or risk having a NullPointerException if a user presses
+            // the back button before the fragment finished loading.
+            if(isAdded()) {
+                ArrayAdapter<Event> adapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_list_item_1, android.R.id.text1, relatedEvents);
+                setListAdapter(adapter);
+
+                // Text to display when adapter is empty
+                setEmptyText("No Related Events Found");
+            }
         }
     }
 

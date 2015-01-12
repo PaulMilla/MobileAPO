@@ -80,7 +80,7 @@ public class RequirementsFragment extends Fragment {
                             transaction.commit();
                         } catch (JSONException e) {
                             // Ex: "Dues Progress" doesn't have any options
-                            Log.w("onClick", nextTitle+"has no '"+ApoOnline.OPTION_EVENTS+"' option");
+                            Log.w("onClick", nextTitle+" has no '"+ApoOnline.OPTION_EVENTS+"' option");
                             Log.w("onClick", options.toString());
                         }
                     }
