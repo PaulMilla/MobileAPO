@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.LinkedList;
@@ -127,8 +126,10 @@ public class RelatedEventsFragment extends ListFragment {
             // or setEmptyText() or risk having a NullPointerException if a user presses
             // the back button before the fragment finished loading.
             if(isAdded()) {
-                ArrayAdapter<Event> adapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_list_item_1, android.R.id.text1, relatedEvents);
+//                ArrayAdapter<Event> adapter = new ArrayAdapter<>(getActivity(),
+//                        android.R.layout.simple_list_item_1, android.R.id.text1, relatedEvents);
+
+                RelatedEventsAdapter adapter = new RelatedEventsAdapter(getActivity(), relatedEvents);
                 setListAdapter(adapter);
 
                 // Text to display when adapter is empty
