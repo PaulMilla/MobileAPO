@@ -5,4 +5,9 @@
     tools:context="com.house_panini.paulm.apo_app.MainActivity"
     tools:ignore="MergeRootFrame"
     style="@style/match_parent">
+    <android.support.v4.widget.DrawerLayout
+        android:layout_width="280dp"
+        android:layout_height="match_parent">
+
+    </android.support.v4.widget.DrawerLayout>
 </FrameLayout>
