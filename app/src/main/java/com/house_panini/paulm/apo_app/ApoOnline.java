@@ -12,7 +12,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ApoOnline {
     //TODO: Update these via values/strings.xml
@@ -20,8 +24,13 @@ public class ApoOnline {
     private static final String HOME_PAGE = APO_ROOT+"memberhome.php";
     private static final String LOGOUT_PAGE = APO_ROOT+"memberhome.php?action=logout";
 
+    public static final String OPTION_RECORDS = "View Detailed Records";
+    public static final String OPTION_STANDINGS = "View Current Standings";
+    public static final String OPTION_EVENTS = "View Related Events";
+
     static String sessionId;
     static JSONObject requirements;
+    static Map<String, List<RelatedEventsFragment.Event>> relatedEvents = new HashMap<>();
 
     /**
      * The way APO Online is implemented there is no "login page". Instead the
@@ -113,7 +122,7 @@ public class ApoOnline {
                 block.put("max", fraction[1]);
                 JSONObject options = new JSONObject();
                 for (Element button : infoBarButtons) {
-                    options.put(button.text(), button.attr("href"));
+                    options.put(button.text(), APO_ROOT+button.attr("href"));
                 }
                 block.put("options", options);
                 requirements.put(header.ownText(), block);
@@ -132,6 +141,85 @@ public class ApoOnline {
         return requirements != null ? requirements : new JSONObject();
     }
 
+    /**
+     * Uses Jsoup to parse through the provided document for related events.
+     * Results are then cached into relatedEvents for future use.
+     * @param title Requirements title the related events will be stored under
+     * @param url   URL to the page containing the related events
+     * @return      The newly created list containing all related events
+     */
+    protected static List<RelatedEventsFragment.Event> parseRelated(String title, String url) {
+        List<RelatedEventsFragment.Event> list = new LinkedList<>();
+        Document doc;
+        try {
+            doc = getPage(url);
+        } catch (IOException e) {
+            Log.e("parseRelated", "Couldn't connect to APO Online!");
+            return list;
+        }
+
+        Element contentBody = doc.select("div.content-body").first();
+
+        if(contentBody.children().size() == 1) {
+            Log.d("parseRelated", contentBody.text());
+            return list;
+        }
+
+        for (Element child : contentBody.children()) {
+            Element event_title = child.select("div.calendar-title").first();
+            Iterator<Element> data;
+            try {
+                data = event_title.children().iterator();
+            } catch (NullPointerException e) {
+                return list;
+            }
+
+            RelatedEventsFragment.Event event = new RelatedEventsFragment.Event();
+
+            Element link = data.next();
+            event.displayName = link.text();
+            event.href = HOME_PAGE+link.attr("href");
+
+            event.attending = data.next().ownText();
+
+            Element tags = data.next();
+            for (Element tag : tags.children()) {
+                event.tags.add(tag.text());
+            }
+
+            event.weekday = child.select("div.calendar-imagebox-weekday").text();
+            event.month = child.select("div.calendar-imagebox-month").text();
+            event.date = child.select("div.calendar-imagebox-date").text();
+
+            list.add(event);
+        }
+
+        relatedEvents.put(title, list);
+        return list;
+    }
+
+    public static List<RelatedEventsFragment.Event> getRelated(String title, String url) {
+        return getRelated(title, url, false);
+    }
+
+    /**
+     * Public method to grab a list of related events. If there is no cached copy, if the cached
+     * copy shows an empty list, or if the parameter forced is true then we return the output of
+     * parseRelated(). Vice-versa, if we do have a non-empty cached copy and forced is false, we
+     * return the cached copy instead of attempting to make another connection to apoonline.org.
+     * @param title     Requirements title the related events will be stored under
+     * @param url       URL to the page containing the related events
+     * @param forced    Weather we want to force a connection to apoonline and refresh our cache
+     * @return          A list of related events, parsed from the url string provided
+     */
+    public static List<RelatedEventsFragment.Event> getRelated(String title, String url, boolean forced) {
+        if (!forced && relatedEvents.containsKey(title) && !relatedEvents.get(title).isEmpty()) {
+            return relatedEvents.get(title);
+        } else {
+            return parseRelated(title, url);
+        }
+    }
+
     public static void logout() {
         Log.d("APO.logout", "Using PHPSESSID: " + sessionId);
         new UserLogoutTask().execute((Void) null);
@@ -144,8 +232,8 @@ public class ApoOnline {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Jsoup.connect(LOGOUT_PAGE).cookie("PHPSESSID", sessionId).get();
-            } catch (IOException e) {
+                ApoOnline.getPage(LOGOUT_PAGE);
+            } catch (Exception e) {
                 // Connection to APO Online failed, but we don't really care
             } finally {
                 sessionId = null;

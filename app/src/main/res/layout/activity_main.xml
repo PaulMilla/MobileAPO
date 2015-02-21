@@ -5,10 +5,4 @@
     tools:context="com.house_panini.paulm.apo_app.MainActivity"
     tools:ignore="MergeRootFrame"
     style="@style/match_parent">
-    <fragment
-        android:id="@+id/requirements_fragment"
-        android:name="com.house_panini.paulm.apo_app.RequirementsFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-    />
 </FrameLayout>
