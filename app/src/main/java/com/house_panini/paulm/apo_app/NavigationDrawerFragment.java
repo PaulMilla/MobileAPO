@@ -58,8 +58,8 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    public NavigationDrawerFragment() {
-    }
+
+    public NavigationDrawerFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,14 +96,14 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
         mDrawerListView.setAdapter(new ArrayAdapter<>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                }));
+            getActivity(),
+            android.R.layout.simple_list_item_activated_1,
+            android.R.id.text1,
+            new String[] {
+                getString(R.string.title_requirements),
+                getString(R.string.title_calendar),
+                getString(R.string.title_my_events),
+        }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -193,7 +193,18 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            switch(position) {
+                case 0:
+                    Fragment fragment = new RequirementsFragment();
+                    mCallbacks.onNavigationDrawerItemSelected(fragment, getString(R.string.title_requirements));
+                    break;
+                case 1:
+                    //TODO: Implement an 'Events Calendar' section
+                    break;
+                case 2:
+                    //TODO: Implement a 'My Events' section
+                    break;
+            }
         }
     }
 
@@ -216,7 +227,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
     }
 
     @Override
@@ -258,7 +269,7 @@ public class NavigationDrawerFragment extends Fragment {
     private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setTitle(R.string.app_name);
     }
 
@@ -273,6 +284,6 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onNavigationDrawerItemSelected(Fragment fragment, String title);
     }
 }

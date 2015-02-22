@@ -22,8 +22,7 @@ public class RequirementsFragment extends Fragment {
 
     private FragmentActivity myContext;
 
-    public RequirementsFragment() {
-    }
+    public RequirementsFragment() { }
 
     @Override
     public void onAttach(Activity activity) {

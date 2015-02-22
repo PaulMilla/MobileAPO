@@ -2,6 +2,9 @@ package com.house_panini.paulm.apo_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -40,28 +43,20 @@ public class MainActivity extends ActionBarActivity implements
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new RequirementsFragment())
-                    .commit();
-        }
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-/*        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+        if (mNavigationDrawerFragment != null && !mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.navigation_drawer, menu);
+            getMenuInflater().inflate(R.menu.menu_requirements_page, menu);
             restoreActionBar();
             return true;
-        }*/
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_requirements_page, menu);
-        return true;
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -103,15 +98,10 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        String text = "Position: "+position+" pressed!";
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-
-        /*
-        // update the main content by replacing fragments
+    public void onNavigationDrawerItemSelected(Fragment fragment, String title) {
+        mTitle = title;
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, NavigationDrawer.PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
-        */
     }
 }
