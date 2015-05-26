@@ -16,18 +16,17 @@ public class RelatedEventsAdapter extends ArrayAdapter<Event> {
     // declaring our ArrayList of items
     private List<Event> objects;
 
-    /* here we must override the constructor for ArrayAdapter
-    * the only variable we care about now is ArrayList<Item> objects,
-    * because it is the list of objects we want to display.
-    */
+    /* Here we must override the constructor for ArrayAdapter
+     * the only variable we care about now is ArrayList<Item> objects,
+     * because it is the list of objects we want to display.
+     */
     public RelatedEventsAdapter (Context context, List<Event> objects) {
         //TODO: Figure out why we need this hardcoded simple_list_item_1 here
         super(context, android.R.layout.simple_list_item_1, objects);
         this.objects = objects;
     }
 
-    /*
-     * we are overriding the getView method here - this is what defines how each
+    /* We are overriding the getView method here - this is what defines how each
      * list item will look.
      */
     public View getView(int position, View convertView, ViewGroup parent) {

@@ -160,10 +160,10 @@ public class ApoOnline {
 
         Element contentBody = doc.select("div.content-body").first();
 
-        if(contentBody.children().size() == 1) {
-            Log.d("parseRelated", contentBody.text());
-            return list;
-        }
+//        if(contentBody.children().size() == 1) {
+//            Log.d("parseRelated", contentBody.text());
+//            return list;
+//        }
 
         for (Element child : contentBody.children()) {
             Element event_title = child.select("div.calendar-title").first();
@@ -218,6 +218,24 @@ public class ApoOnline {
         } else {
             return parseRelated(title, url);
         }
+    }
+
+    public static JSONObject getEventInfo(String url) {
+        JSONObject json = new JSONObject();
+
+        Document doc;
+        try {
+            doc = getPage(url);
+        } catch (IOException e) {
+            Log.e("getEvent", "Couldn't connect to APO Online!");
+            return json;
+        }
+
+        Elements body = doc.select("div.body");
+        Log.d("", body.html());
+
+
+        return json;
     }
 
     public static void logout() {

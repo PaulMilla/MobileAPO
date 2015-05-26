@@ -1,6 +1,7 @@
 package com.house_panini.paulm.apo_app;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,7 +16,8 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity implements
         RelatedEventsFragment.OnFragmentInteractionListener,
-        NavigationDrawerFragment.NavigationDrawerCallbacks {
+        NavigationDrawerFragment.NavigationDrawerCallbacks,
+        EventFragment.OnFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -95,6 +97,11 @@ public class MainActivity extends ActionBarActivity implements
     public void onFragmentInteraction(RelatedEventsFragment.Event event) {
         String text = event.displayName+" pressed!";
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        mTitle = event.toString();
+        Fragment eventFragment = EventFragment.newInstance(event.href);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, eventFragment)
+                .commit();
     }
 
     @Override
@@ -103,5 +110,10 @@ public class MainActivity extends ActionBarActivity implements
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        //TODO: EventFragment.onFragmentInteraction()
     }
 }

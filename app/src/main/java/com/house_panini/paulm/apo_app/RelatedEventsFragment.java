@@ -26,6 +26,13 @@ public class RelatedEventsFragment extends ListFragment {
 
     private OnFragmentInteractionListener mListener;
 
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public RelatedEventsFragment() { }
+
     /**
      * Apparently using factory methods is the Google way of constructing a
      * new Fragment rather than just have a constructor with parameters.
@@ -42,12 +49,6 @@ public class RelatedEventsFragment extends ListFragment {
         return fragment;
     }
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public RelatedEventsFragment() { }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +59,6 @@ public class RelatedEventsFragment extends ListFragment {
             new UserRelatedEventsTask(title, url).execute((Void) null);
         }
     }
-
 
     @Override
     public void onAttach(Activity activity) {
