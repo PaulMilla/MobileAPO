@@ -22,8 +22,7 @@ public class RequirementsFragment extends Fragment {
 
     private FragmentActivity myContext;
 
-    public RequirementsFragment() {
-    }
+    public RequirementsFragment() { }
 
     @Override
     public void onAttach(Activity activity) {
@@ -32,8 +31,7 @@ public class RequirementsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_requirements, container, false);
 
         LinearLayout myLayout = (LinearLayout) rootView.findViewById(R.id.requirements_layout);

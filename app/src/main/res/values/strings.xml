@@ -7,5 +7,15 @@
     <string name="requirements_page">http://apoonline.org/alpharho/memberhome.php</string>
     <string name="title_activity_main">Requirements</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawer</string>
+
+    <string name="title_requirements">Requirements</string>
+    <string name="title_calendar">Events Calendar</string>
+    <string name="title_my_events">My Upcoming Events</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
 
 </resources>
