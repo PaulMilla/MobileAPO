@@ -3,6 +3,7 @@ package com.house_panini.paulm.apo_app;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -231,10 +232,37 @@ public class ApoOnline {
             return json;
         }
 
-        Elements body = doc.select("div.body");
-        Log.d("", body.html());
+        Elements body = doc.select("html > body > div#body");
+        Elements allInfo = body.select("div > table > tbody");
+        Elements mainInfo = allInfo.select("tr");
+        Elements leftInfo = mainInfo.select("td > table > tbody");
+        Iterator<Element> it = leftInfo.select("tr").iterator();
+        try {
+            json.put("date", it.next().text());
+            json.put("description", it.next().text());
 
+            Elements rightInfo = mainInfo.select("td + td > table > tbody");
+            it = rightInfo.select("tr").iterator();
+            json.put("lockDate", it.next().text());
+            json.put("closeDate", it.next().text());
+            JSONArray tags = new JSONArray();
+            while(it.hasNext()) {
+                tags.put(it.next().text());
+            }
 
+            it = allInfo.select("tr + tr > td > p").first().children().iterator();
+            it.next(); //Event Coordinator
+            it.next(); //img
+
+            json.put("coordName", it.next().text()); //FUTURE: Link to user profile
+            json.put("coordPhone", it.next().text()); //FUTURE: Give option to call
+            json.put("coordEmail", it.next().text()); //FUTURE: Give option to email
+
+            //TODO: Attendees
+            Log.i("EventInfo", json.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return json;
     }
 

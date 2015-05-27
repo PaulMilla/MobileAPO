@@ -95,8 +95,6 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onFragmentInteraction(RelatedEventsFragment.Event event) {
-        String text = event.displayName+" pressed!";
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         mTitle = event.toString();
         Fragment eventFragment = EventFragment.newInstance(event.href);
         getSupportFragmentManager().beginTransaction()
@@ -112,7 +110,7 @@ public class MainActivity extends ActionBarActivity implements
                 .commit();
     }
 
-    @Override
+    @Override //From EventFragment
     public void onFragmentInteraction(Uri uri) {
         //TODO: EventFragment.onFragmentInteraction()
     }
