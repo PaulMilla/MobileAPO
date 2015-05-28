@@ -258,8 +258,21 @@ public class ApoOnline {
             json.put("coordPhone", it.next().text()); //FUTURE: Give option to call
             json.put("coordEmail", it.next().text()); //FUTURE: Give option to email
 
-            //TODO: Attendees
-            Log.i("EventInfo", json.toString());
+            JSONArray attendees = new JSONArray();
+            JSONObject brotherInfo = new JSONObject();
+            Elements attTable = body.select("div > div > div > div + div > table > tbody");
+            it = attTable.iterator();
+            while(it.hasNext()) {
+                Iterator<Element> col = it.next().select("tr > td").iterator();
+                col.next(); //# //BUG: Potentially ordered wrong
+                brotherInfo.put("brother", col.next().text()); //Brother
+                brotherInfo.put("phone"  , col.next().text()); //Phone
+                brotherInfo.put("comment", col.next().text()); //Comment
+                attendees.put(brotherInfo);
+            }
+            json.put("attendees", attendees);
+
+            Log.d("EventInfo", json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

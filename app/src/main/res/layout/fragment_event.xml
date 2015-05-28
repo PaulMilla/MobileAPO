@@ -1,10 +1,115 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.house_panini.paulm.apo_app.EventFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/default_gap">
+
+            <TextView
+                android:id="@+id/event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="May 31, 2015 at 2:00pm to 4:15pm"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="4dp" />
+            <TextView
+                android:id="@+id/event_lock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_date"
+                android:text="Sign-ups lock on May 31 at 2:00pm"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
+            <TextView
+                android:id="@+id/event_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_lock"
+                android:text="Sign-ups close on May 31 at 2:00pm"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
+            <LinearLayout
+                android:id="@+id/event_tags"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/event_close"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1 Leadership Event Credit"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/event_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_tags"
+                android:text="LAUNCH is a leadership course..."
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:layout_marginTop="17dp"
+                android:layout_marginBottom="17dp"
+            />
+            <TextView
+                android:id="@+id/event_coord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_description"
+                android:text="Event Coordinator:"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:layout_marginTop="17dp"
+                android:layout_marginBottom="17dp"
+                android:layout_marginRight="4dp" />
+            <TextView
+                android:id="@+id/event_coord_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Maria Aviles"
+                android:layout_alignTop="@+id/event_coord"
+                android:layout_toRightOf="@+id/event_coord"
+                android:layout_toEndOf="@+id/event_coord"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="4dp" />
+            <TextView
+                android:id="@+id/event_coord_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(830) 275 - 2318"
+                android:layout_below="@+id/event_coord_name"
+                android:layout_toRightOf="@+id/event_coord"
+                android:layout_toEndOf="@+id/event_coord"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginBottom="4dp"
+                android:textSize="@dimen/abc_text_size_small_material" />
+            <TextView
+                android:id="@+id/event_coord_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ice@texasapo.org"
+                android:layout_below="@+id/event_coord_phone"
+                android:layout_toRightOf="@+id/event_coord"
+                android:layout_toEndOf="@+id/event_coord"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:textSize="@dimen/abc_text_size_small_material" />
+        </RelativeLayout>
+    </ScrollView>
 
 </FrameLayout>

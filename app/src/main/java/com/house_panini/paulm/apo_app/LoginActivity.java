@@ -235,7 +235,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         //int IS_PRIMARY = 1;
     }
 
-
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
