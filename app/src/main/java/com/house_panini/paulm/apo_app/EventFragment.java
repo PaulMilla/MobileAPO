@@ -8,6 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -38,7 +42,7 @@ public class EventFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_event, container, false);
         if(getArguments() != null) {
             url = getArguments().getString(ARG_URL);
-            new ParseEventTask(url).execute((Void) null);
+            new ParseEventTask(url, rootView).execute((Void) null);
         }
         // Inflate the layout for this fragment
         return rootView;
@@ -85,15 +89,43 @@ public class EventFragment extends Fragment {
 
     class ParseEventTask extends AsyncTask<Void, Void, Void> {
         String url;
+        View rootView;
+        JSONObject eventInfo;
 
-        public ParseEventTask(String _url) {
+        public ParseEventTask(String _url, View _rootView) {
             url = _url;
+            rootView = _rootView;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            ApoOnline.getEventInfo(url);
+            eventInfo = ApoOnline.getEventInfo(url);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            //TODO: Find the correct way to hook everything up
+            TextView event_date = (TextView) rootView.findViewById(R.id.event_date);
+            TextView event_description = (TextView) rootView.findViewById(R.id.event_description);
+            TextView lock_date = (TextView) rootView.findViewById(R.id.event_lock);
+            TextView close_date = (TextView) rootView.findViewById(R.id.event_close);
+            TextView coord_name = (TextView) rootView.findViewById(R.id.event_coord_name);
+            TextView coord_phone = (TextView) rootView.findViewById(R.id.event_coord_phone);
+            TextView coord_email = (TextView) rootView.findViewById(R.id.event_coord_email);
+            //TODO: Attendees
+            try {
+                event_date.setText(eventInfo.getString("date"));
+                event_description.setText(eventInfo.getString("description"));
+                lock_date.setText(eventInfo.getString("lockDate"));
+                close_date.setText(eventInfo.getString("closeDate"));
+                coord_name.setText(eventInfo.getString("cordName"));
+                coord_phone.setText(eventInfo.getString("cordPhone"));
+                coord_email.setText(eventInfo.getString("cordEmail"));
+                //TODO: Attendees
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

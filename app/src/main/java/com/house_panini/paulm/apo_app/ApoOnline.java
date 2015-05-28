@@ -239,6 +239,7 @@ public class ApoOnline {
         Iterator<Element> it = leftInfo.select("tr").iterator();
         try {
             json.put("date", it.next().text());
+            //TODO: Parse with correct formatting
             json.put("description", it.next().text());
 
             Elements rightInfo = mainInfo.select("td + td > table > tbody");
