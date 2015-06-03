@@ -232,56 +232,122 @@ public class ApoOnline {
             return json;
         }
 
-        Elements body = doc.select("html > body > div#body");
-        Elements allInfo = body.select("div > table > tbody");
-        Elements mainInfo = allInfo.select("tr");
-        Elements leftInfo = mainInfo.select("td > table > tbody");
-        Iterator<Element> it = leftInfo.select("tr").iterator();
-        try {
-            json.put("date", it.next().text());
-            //TODO: Parse with correct formatting
-            json.put("description", it.next().text());
-
-            Elements rightInfo = mainInfo.select("td + td > table > tbody");
-            it = rightInfo.select("tr").iterator();
-            json.put("lockDate", it.next().text());
-            json.put("closeDate", it.next().text());
-            JSONArray tags = new JSONArray();
-            while(it.hasNext()) {
-                tags.put(it.next().text());
-            }
-
-            // There might not be an event coordinator
+        Element ele;
+        try { //JSONException
+            //Parse Event Date & Time
             try {
-                it = allInfo.select("tr + tr > td > p").first().children().iterator();
-                it.next(); //Event Coordinator
-                it.next(); //img
-
-                json.put("coordName", it.next().text()); //FUTURE: Link to user profile
-                json.put("coordPhone", it.next().text()); //FUTURE: Give option to call
-                json.put("coordEmail", it.next().text()); //FUTURE: Give option to email
+                ele = doc.select("div [onmouseover=\"Tip('Event Date & Time')\"]")
+                        .first().parent().nextElementSibling();
+                json.put("date", ele.text());
             } catch (NullPointerException e) {
-                Log.e("getEventInfo", "No Event Coordinator found");
+                json.put("date", "No Date & Time");
             }
 
-            JSONArray attendees = new JSONArray();
-            JSONObject brotherInfo = new JSONObject();
-            Elements attTable = body.select("div > div > div > div + div > table > tbody");
-            it = attTable.iterator();
-            while(it.hasNext()) {
-                Iterator<Element> col = it.next().select("tr > td").iterator();
-                col.next(); //# //BUG: Potentially ordered wrong
-                brotherInfo.put("brother", col.next().text()); //Brother
-                brotherInfo.put("phone"  , col.next().text()); //Phone
-                brotherInfo.put("comment", col.next().text()); //Comment
-                attendees.put(brotherInfo);
+            //Parse Event Location
+            try {
+                ele = doc.select("div [onmouseover=\"Tip('Event Location')\"]")
+                        .first().parent().nextElementSibling();
+                json.put("location", ele.text());
+            } catch (NullPointerException e) {
+                json.put("location", "No Event Location");
             }
-            json.put("attendees", attendees);
 
-            Log.d("EventInfo", json.toString());
+            //Parse Event Information
+            try {
+                ele = doc.select("div [onmouseover=\"Tip('Event Information')\"]")
+                        .first().parent().nextElementSibling();
+                json.put("description", ele.html());
+            } catch (NullPointerException e) {
+                json.put("description", "No Event Information");
+            }
+
+            //Parse Sign-ups Lock
+            try {
+                ele = doc.select("div [onmouseover=\"Tip('Sign-ups Lock')\"]")
+                        .first().parent().nextElementSibling();
+                json.put("lockDate", ele.text());
+            } catch (NullPointerException e) {
+                json.put("lockDate", "No Lock Information");
+            }
+
+            //Parse Sign-ups Close
+            try {
+                ele = doc.select("div [onmouseover=\"Tip('Sign-ups Close')\"]")
+                        .first().parent().nextElementSibling();
+                json.put("closeDate", ele.text());
+            } catch (NullPointerException e) {
+                json.put("closeDate", "No Close Information");
+            }
+
+            //Parse Tags
+            try {
+                JSONArray tags = new JSONArray();
+                ele = doc.select("div [onmouseover=\"Tip('Credit Towards Requirements')\"]")
+                        .first().parent().nextElementSibling().child(0);
+                for (Element element : ele.children()) {
+                    tags.put(element.text());
+                }
+                json.put("tags", tags);
+            } catch (NullPointerException e) {
+                Log.e("getEvent", "No tags found");
+            }
+
+            //Parse Event Coordinator
+            try {
+                ele = doc.select("span:matches(^Event Coordinator:$)")
+                        .first().nextElementSibling(); //skip icon
+
+                //FUTURE: Link to user page
+                ele = ele.nextElementSibling();
+                json.put("coordName", ele.text());
+
+                //FUTURE: Allow options to call/copy
+                ele = ele.nextElementSibling();
+                json.put("coordPhone", ele.text());
+
+                ele = ele.nextElementSibling();
+                json.put("coordEmail", ele.text());
+            } catch (NullPointerException e) {
+                Log.e("getEvent", "No Event Coordinator");
+            }
+
+            //Parse Attendees
+            int shift = 0;
+            Elements eles = doc.select("div#shift_"+shift);
+            for(; !eles.isEmpty(); eles = doc.select("div#shift_"+ (++shift))) {
+                JSONObject currentShift = new JSONObject();
+                ele = eles.first().child(0);
+
+                Element header = ele.child(0);
+                Elements e;
+                if(!(e = header.select("span")).isEmpty()) {
+                    currentShift.put("shiftTime", e.text());
+                }
+
+                Element body = ele.child(1).select("table > tbody").first();
+                Iterator<Element> row = body.children().iterator();
+                JSONObject attendees = new JSONObject();
+                while(row.hasNext()) {
+                    Element r = row.next();
+                    JSONObject attendee = new JSONObject();
+
+                    String spot = r.child(0).text().charAt(0)+"";
+                    String brother = r.child(1).child(0).text(); //FUTURE: Drivers
+                    String phone = r.child(2).text();
+                    String comment = r.child(3).text();
+                    attendee.put("brother", brother);
+                    attendee.put("phone", phone);
+                    attendee.put("comment", comment);
+
+                    attendees.put(spot, attendee);
+                }
+                currentShift.put("attendees", attendees);
+                json.put("shift"+shift, currentShift);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return json;
     }
 
