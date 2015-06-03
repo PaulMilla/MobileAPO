@@ -18,7 +18,7 @@
                 android:id="@+id/event_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="May 31, 2015 at 2:00pm to 4:15pm"
+                android:text="event_date"
                 android:textSize="@dimen/abc_text_size_medium_material"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="4dp" />
@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_date"
-                android:text="Sign-ups lock on May 31 at 2:00pm"
+                android:text="event_lock"
                 android:textSize="@dimen/abc_text_size_small_material"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp" />
@@ -36,7 +36,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_lock"
-                android:text="Sign-ups close on May 31 at 2:00pm"
+                android:text="event_close"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
+            <TextView
+                android:id="@+id/event_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_close"
+                android:text="event_location"
                 android:textSize="@dimen/abc_text_size_small_material"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp" />
@@ -44,7 +53,7 @@
                 android:id="@+id/event_tags"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/event_close"
+                android:layout_below="@id/event_location"
                 android:orientation="vertical">
 
                 <TextView
@@ -60,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_tags"
-                android:text="LAUNCH is a leadership course..."
+                android:text="event_description"
                 android:textSize="@dimen/abc_text_size_small_material"
                 android:layout_marginTop="17dp"
                 android:layout_marginBottom="17dp"
@@ -79,7 +88,7 @@
                 android:id="@+id/event_coord_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Maria Aviles"
+                android:text="event_coord_name"
                 android:layout_alignTop="@+id/event_coord"
                 android:layout_toRightOf="@+id/event_coord"
                 android:layout_toEndOf="@+id/event_coord"
@@ -90,7 +99,7 @@
                 android:id="@+id/event_coord_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(830) 275 - 2318"
+                android:text="event_coord_phone"
                 android:layout_below="@+id/event_coord_name"
                 android:layout_toRightOf="@+id/event_coord"
                 android:layout_toEndOf="@+id/event_coord"
@@ -102,7 +111,7 @@
                 android:id="@+id/event_coord_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ice@texasapo.org"
+                android:text="event_coord_email"
                 android:layout_below="@+id/event_coord_phone"
                 android:layout_toRightOf="@+id/event_coord"
                 android:layout_toEndOf="@+id/event_coord"

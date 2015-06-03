@@ -29,6 +29,11 @@ public class EventFragment extends Fragment {
     // Required empty public constructor
     public EventFragment() { }
 
+    /**
+     * Factory method for a new EventFragment
+     * @param href
+     * @return
+     */
     public static EventFragment newInstance(String href) {
         EventFragment fragment = new EventFragment();
         Bundle args = new Bundle();

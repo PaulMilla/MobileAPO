@@ -96,14 +96,17 @@ public class MainActivity extends ActionBarActivity implements
         Fragment eventFragment = EventFragment.newInstance(event.href);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, eventFragment)
+                .addToBackStack(null)
                 .commit();
     }
 
-    @Override
+    @Override //From NavigationDrawerFragment
     public void onNavigationDrawerItemSelected(Fragment fragment, String title) {
         mTitle = title;
+        /* We want to start a new back stack if selecting from the drawer */
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
+//                .addToBackStack(null)
                 .commit();
     }
 

@@ -103,6 +103,7 @@ public class NavigationDrawerFragment extends Fragment {
                 getString(R.string.title_requirements),
                 getString(R.string.title_calendar),
                 getString(R.string.title_my_events),
+                "Event Test"
         }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -193,9 +194,11 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
+            Fragment fragment;
             switch(position) {
                 case 0:
-                    Fragment fragment = new RequirementsFragment();
+                    //TODO: Change to RequirementsFragment.newInstance() factory
+                    fragment = new RequirementsFragment();
                     mCallbacks.onNavigationDrawerItemSelected(fragment, getString(R.string.title_requirements));
                     break;
                 case 1:
@@ -203,6 +206,10 @@ public class NavigationDrawerFragment extends Fragment {
                     break;
                 case 2:
                     //TODO: Implement a 'My Events' section
+                    break;
+                case 3:
+                    fragment = EventFragment.newInstance("http://www.apoonline.org/alpharho/memberhome.php?action=eventsignup&eventid=196910");
+                    mCallbacks.onNavigationDrawerItemSelected(fragment, "Event Test");
                     break;
             }
         }

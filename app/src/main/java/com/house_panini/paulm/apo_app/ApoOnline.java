@@ -251,13 +251,18 @@ public class ApoOnline {
                 tags.put(it.next().text());
             }
 
-            it = allInfo.select("tr + tr > td > p").first().children().iterator();
-            it.next(); //Event Coordinator
-            it.next(); //img
+            // There might not be an event coordinator
+            try {
+                it = allInfo.select("tr + tr > td > p").first().children().iterator();
+                it.next(); //Event Coordinator
+                it.next(); //img
 
-            json.put("coordName", it.next().text()); //FUTURE: Link to user profile
-            json.put("coordPhone", it.next().text()); //FUTURE: Give option to call
-            json.put("coordEmail", it.next().text()); //FUTURE: Give option to email
+                json.put("coordName", it.next().text()); //FUTURE: Link to user profile
+                json.put("coordPhone", it.next().text()); //FUTURE: Give option to call
+                json.put("coordEmail", it.next().text()); //FUTURE: Give option to email
+            } catch (NullPointerException e) {
+                Log.e("getEventInfo", "No Event Coordinator found");
+            }
 
             JSONArray attendees = new JSONArray();
             JSONObject brotherInfo = new JSONObject();
