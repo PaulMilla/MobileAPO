@@ -1,6 +1,5 @@
 package com.house_panini.paulm.apo_app;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -197,7 +196,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
         if (mCallbacks != null) {
             switch(position) {
-                case 0:
+                case 0: // Requirements
                     Fragment fragment = new RequirementsFragment();
                     mCallbacks.onNavigationDrawerItemSelected(fragment, getString(R.string.title_requirements));
                     break;
@@ -209,6 +208,9 @@ public class NavigationDrawerFragment extends Fragment {
                     break;
                 case 3:
                     //TODO: Implement a 'Settings' section
+                    break;
+                case 4: // Logout
+                    mCallbacks.logout();
                     break;
             }
         }
@@ -291,5 +293,6 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(Fragment fragment, String title);
+        void logout();
     }
 }

@@ -1,10 +1,9 @@
 package com.house_panini.paulm.apo_app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -45,7 +44,6 @@ public class MainActivity extends ActionBarActivity implements
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mNavigationDrawerFragment != null && !mNavigationDrawerFragment.isDrawerOpen()) {
@@ -67,10 +65,8 @@ public class MainActivity extends ActionBarActivity implements
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_logout:
-                ApoOnline.logout();
-                launchLogin();
-                break;
+//            case R.id.refresh:
+//                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -101,5 +97,16 @@ public class MainActivity extends ActionBarActivity implements
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+    }
+
+    @Override
+    public void logout() {
+        ApoOnline.logout();
+        SharedPreferences credentials = getSharedPreferences(LoginActivity.PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = credentials.edit();
+        editor.putString(LoginActivity.PREF_USER, "");
+        editor.putString(LoginActivity.PREF_PASS, "");
+        editor.commit();
+        launchLogin();
     }
 }

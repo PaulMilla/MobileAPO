@@ -51,9 +51,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
+    // SharedPreferences key names
+    public static final String PREF_NAME = "CREDENTIALS";
+    public static final String PREF_USER = "USERNAME";
+    public static final String PREF_PASS = "PASSWORD";
 
-    public static final String PREF_USER = "username";
-    public static final String PREF_PASS = "password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,15 +90,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mProgressView = findViewById(R.id.login_progress);
 
         // Restore previous email and password settings
-        SharedPreferences credentials = getPreferences(MODE_PRIVATE);
+        SharedPreferences credentials = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String email = credentials.getString(PREF_USER, "");
         String pass = credentials.getString(PREF_PASS, "");
 
         mEmailView.setText(email);
         mPasswordView.setText(pass);
 
-        if(isEmailValid(email) && isPasswordValid(pass))
+        if(isEmailValid(email) && isPasswordValid(pass)) {
+            Log.i("LoginActivity", "Found previous email: "+email);
+            Log.i("LoginActivity", "Found previous pass: "+pass);
             attemptLogin();
+        }
     }
 
     private void populateAutoComplete() {
@@ -301,7 +306,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         protected void saveCredentials(String user, String pass) {
-            SharedPreferences pref = getPreferences(MODE_PRIVATE);
+            SharedPreferences pref = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
             editor.putString(PREF_USER, user);
             editor.putString(PREF_PASS, pass);
