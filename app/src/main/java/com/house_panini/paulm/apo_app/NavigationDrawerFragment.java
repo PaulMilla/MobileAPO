@@ -1,5 +1,6 @@
 package com.house_panini.paulm.apo_app;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -103,6 +104,8 @@ public class NavigationDrawerFragment extends Fragment {
                 getString(R.string.title_requirements),
                 getString(R.string.title_calendar),
                 getString(R.string.title_my_events),
+                getString(R.string.title_settings),
+                getString(R.string.title_logout),
         }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -203,6 +206,9 @@ public class NavigationDrawerFragment extends Fragment {
                     break;
                 case 2:
                     //TODO: Implement a 'My Events' section
+                    break;
+                case 3:
+                    //TODO: Implement a 'Settings' section
                     break;
             }
         }

@@ -67,8 +67,6 @@ public class MainActivity extends ActionBarActivity implements
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_settings:
-                return true;
             case R.id.action_logout:
                 ApoOnline.logout();
                 launchLogin();

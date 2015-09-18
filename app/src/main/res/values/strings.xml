@@ -11,6 +11,8 @@
     <string name="title_requirements">Requirements</string>
     <string name="title_calendar">Events Calendar</string>
     <string name="title_my_events">My Upcoming Events</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_logout">Log Out</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
