@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -50,6 +51,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
+
+    public static final String PREF_USER = "username";
+    public static final String PREF_PASS = "password";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +86,17 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        // Restore previous email and password settings
+        SharedPreferences credentials = getPreferences(MODE_PRIVATE);
+        String email = credentials.getString(PREF_USER, "");
+        String pass = credentials.getString(PREF_PASS, "");
+
+        mEmailView.setText(email);
+        mPasswordView.setText(pass);
+
+        if(isEmailValid(email) && isPasswordValid(pass))
+            attemptLogin();
     }
 
     private void populateAutoComplete() {
@@ -284,12 +300,21 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             return false;
         }
 
+        protected void saveCredentials(String user, String pass) {
+            SharedPreferences pref = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString(PREF_USER, user);
+            editor.putString(PREF_PASS, pass);
+            editor.commit();
+        }
+
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
 
             if (success) {
+                saveCredentials(mEmail, mPassword);
                 Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                 LoginActivity.this.startActivity(myIntent);
                 finish();
